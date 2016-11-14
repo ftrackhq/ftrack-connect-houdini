@@ -62,7 +62,7 @@ def get_files_from_folder(folder):
 
         if files_list:
             destination_folder = root.replace(
-                RESOURCE_PATH, 'ftrack_connect_maya/ftrack_connect_maya'
+                RESOURCE_PATH, 'ftrack_connect_houdini/ftrack_connect_houdini'
             )
             plugin_data_files.append(
                 (destination_folder, files_list)
@@ -80,7 +80,7 @@ for child in os.listdir(
 
 data_files.append(
     (
-        'ftrack_connect_maya/hook',
+        'ftrack_connect_houdini/hook',
         glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
     )
 )
@@ -88,14 +88,14 @@ data_files.append(
 
 # Configuration.
 setup(
-    name='ftrack connect maya',
+    name='ftrack connect houdini',
     version=VERSION,
-    description='Maya integration with ftrack.',
+    description='Houdini integration with ftrack.',
     long_description=open(README_PATH).read(),
     keywords='',
-    url='https://bitbucket.org/ftrack/ftrack-connect-maya',
-    author='ftrack',
-    author_email='support@ftrack.com',
+    url='https://bitbucket.org/postmodern_dev/ftrack-connect-houdini',
+    author='postmodern',
+    author_email='m.datcik@postmoden.ua',
     license='Apache License (2.0)',
     packages=find_packages(SOURCE_PATH),
     package_dir={
