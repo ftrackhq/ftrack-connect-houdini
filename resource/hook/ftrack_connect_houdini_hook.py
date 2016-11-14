@@ -248,8 +248,7 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
         environment['FTRACK_TASKID'] = task.getId()
         environment['FTRACK_SHOTID'] = task.get('parent_id')
 
-        # houdini_connect_scripts = os.path.join(self.plugin_path, 'scripts')
-        # houdini_connect_plugins = os.path.join(self.plugin_path, 'plug_ins')
+        houdini_connect_plugins = os.path.join(self.plugin_path, 'houdini_path')
 
         # Append or Prepend values to the environment.
         # Note that if you assign manually you will overwrite any
@@ -257,7 +256,7 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
 
         # Add my custom path to the HOUDINI_SCRIPT_PATH.
         environment = ftrack_connect.application.appendPath(
-            os.path.pathsep.join([self.plugin_path, '&']),
+            os.path.pathsep.join([houdini_connect_plugins, '&']),
             'HOUDINI_PATH',
             environment
         )
@@ -305,29 +304,3 @@ def register(registry, **kw):
     # Create action and register to respond to discover and launch actions.
     action = HoudiniAction(application_store, launcher)
     action.register()
-
-
-if __name__ == '__main__':
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.INFO)
-
-    # Create store containing applications.
-    applicationStore = ApplicationStore()
-
-    # Create a launcher with the store containing applications.
-    launcher = ftrack_connect.application.ApplicationLauncher(
-        applicationStore
-    )
-
-    # Create action and register to respond to discover and launch actions.
-    ftrack.setup()
-    action = HoudiniAction(applicationStore, launcher)
-    action.register()
-
-    import app_launch_environment
-
-    ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.connect.application.launch',
-        app_launch_environment.modify_application_launch)
-
-    ftrack.EVENT_HUB.wait()
