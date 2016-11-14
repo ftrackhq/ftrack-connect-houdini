@@ -14,8 +14,7 @@ extensions = [
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
-    'lowdown'
+    'sphinx.ext.viewcode'
 ]
 
 
