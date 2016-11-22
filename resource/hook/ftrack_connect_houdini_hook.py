@@ -1,11 +1,10 @@
 # :coding: utf-8
-# :copyright: Copyright (c) 2015 ftrack
+# :copyright: Copyright (c) 2016 Postmodern Digital
 
 import getpass
 import sys
 import pprint
 import logging
-import re
 import os
 
 # RESOURCE_DIRECTORY = os.path.abspath(
