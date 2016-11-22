@@ -9,6 +9,8 @@
         <label>ImportAsset</label>
         <scriptCode><![CDATA[
 import ftrack_startup
+pan_path = ftrack_startup.writePypanel('ftrack_importAsset_panel', 'showImportAssetDialog')
+hou.pypanel.installFile(pan_path)
 ftrack_startup.FtrackDialogs('ftrack_importAsset_panel')]]></scriptCode>
       </scriptItem>
 
@@ -16,6 +18,8 @@ ftrack_startup.FtrackDialogs('ftrack_importAsset_panel')]]></scriptCode>
         <label>PublishAsset</label>
         <scriptCode><![CDATA[
 import ftrack_startup
+pan_path = ftrack_startup.writePypanel('ftrack_publish_panel', 'showPublishDialog')
+hou.pypanel.installFile(pan_path)
 ftrack_startup.FtrackDialogs('ftrack_publish_panel')]]></scriptCode>
       </scriptItem>
 
@@ -25,6 +29,8 @@ ftrack_startup.FtrackDialogs('ftrack_publish_panel')]]></scriptCode>
         <label>AssetManager</label>
         <scriptCode><![CDATA[
 import ftrack_startup
+pan_path = ftrack_startup.writePypanel('ftrack_assetManager_panel', 'showAssetManagerDialog')
+hou.pypanel.installFile(pan_path)
 ftrack_startup.FtrackDialogs('ftrack_assetManager_panel')
 ]]></scriptCode>
       </scriptItem>
@@ -35,6 +41,8 @@ ftrack_startup.FtrackDialogs('ftrack_assetManager_panel')
         <label>Info</label>
         <scriptCode><![CDATA[
 import ftrack_startup
+pan_path = ftrack_startup.writePypanel('ftrack_info_panel', 'showInfoDialog')
+hou.pypanel.installFile(pan_path)
 ftrack_startup.FtrackDialogs('ftrack_info_panel')]]></scriptCode>
       </scriptItem>
 
