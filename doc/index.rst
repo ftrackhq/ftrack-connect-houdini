@@ -5,7 +5,7 @@
 ftrack connect houdini
 ###################
 
-Houdini integration with ftrack.
+Basic Houdini integration with ftrack.
 
 .. toctree::
     :maxdepth: 2

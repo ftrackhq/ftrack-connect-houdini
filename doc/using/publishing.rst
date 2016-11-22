@@ -9,12 +9,8 @@ Publishing asset versions
 
 Use the publish asset dialog to publish a new asset version from Houdini.
 
-Supported asset types are:
+For now supported asset types are:
 
-* Camera
-* Geometry
-* Light rig
-* Rig
 * Scene
 
 To publish a new asset or version up an existing, simply select it in your scene
