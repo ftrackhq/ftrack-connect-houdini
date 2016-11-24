@@ -1,4 +1,3 @@
-import houdinicon
 import hou
 import ftrack
 
@@ -13,6 +12,7 @@ from ftrack_connect.connector import (
 )
 
 from ftrack_connect.connector import panelcom
+
 
 class GenericAsset(FTAssetType):
     def __init__(self):
@@ -49,7 +49,15 @@ class GenericAsset(FTAssetType):
 
         publishedComponents = []
 
+        totalSteps = self.getTotalSteps(
+            steps=[
+                iAObj.options['houdiniBinary'],
+                iAObj.options['alembic'],
+            ]
+        )
+
         panelComInstance = panelcom.PanelComInstance.instance()
+        panelComInstance.setTotalExportSteps(totalSteps)
 
         if hasattr(iAObj, 'customComponentName'):
             componentName = iAObj.customComponentName
@@ -215,27 +223,290 @@ class GeometryAsset(GenericAsset):
 
         return publishedComponents, 'Published GeometryAsset asset'
 
+    @staticmethod
+    def exportOptions():
+        xml = """
+        <tab name="Houdini Scene options" accepts="houdini">
+            <row name="Houdini binary" accepts="houdini">
+                <option type="checkbox" name="houdiniBinary" value="True"/>
+            </row>
+            <row name="Houdini Selection Mode" accepts="houdini">
+                <option type="radio" name="exportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        <tab name="Alembic options">
+            <row name="Publish Alembic">
+                <option type="checkbox" name="alembic"/>
+            </row>
+            <row name="Include animation">
+                <option type="checkbox" name="alembicAnimation"/>
+            </row>
+            <row name="Frame range">
+                <option type="string" name="frameStart" value="{0}"/>
+                <option type="string" name="frameEnd" value="{1}"/>
+            </row>
+            <row name="Evaluate every">
+                <option type="float" name="alembicEval" value="1.0"/>
+            </row>
+            <row name="Alembic Selection Mode" accepts="maya">
+                <option type="radio" name="alembicExportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        """
+        s = os.getenv('FS')
+        e = os.getenv('FE')
+        xml = xml.format(s, e)
+        return xml
 
-# class CameraAsset(GenericAsset):
-#     def __init__(self):
-#         super(GeometryAsset, self).__init__()
 
-#     def importAsset(self, iAObj=None):
-#         GenericAsset.importAsset(self, iAObj)
+class CameraAsset(GenericAsset):
+    def __init__(self):
+        super(CameraAsset, self).__init__()
 
-#     def changeVersion(self, iAObj=None, applicationObject=None):
-#         return GenericAsset.changeVersion(self, iAObj, applicationObject)
+    def importAsset(self, iAObj=None):
+        GenericAsset.importAsset(self, iAObj)
 
-#     def publishAsset(self, iAObj=None):
-#         publishedComponents = []
-#         geometryComponents = GenericAsset.publishAsset(self, iAObj)
-#         publishedComponents += geometryComponents
+    def changeVersion(self, iAObj=None, applicationObject=None):
+        return GenericAsset.changeVersion(self, iAObj, applicationObject)
 
-#         return publishedComponents, 'Published GeometryAsset asset'
+    def publishAsset(self, iAObj=None):
+        publishedComponents = []
+        geometryComponents = GenericAsset.publishAsset(self, iAObj)
+        publishedComponents += geometryComponents
+
+        return publishedComponents, 'Published CameraAsset asset'
+
+    @staticmethod
+    def exportOptions():
+        xml = """
+        <tab name="Houdini Scene options" accepts="houdini">
+            <row name="Houdini binary" accepts="houdini">
+                <option type="checkbox" name="houdiniBinary" value="True"/>
+            </row>
+            <row name="Houdini Selection Mode" accepts="houdini">
+                <option type="radio" name="exportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        <tab name="Alembic options">
+            <row name="Publish Alembic">
+                <option type="checkbox" name="alembic"/>
+            </row>
+            <row name="Include animation">
+                <option type="checkbox" name="alembicAnimation"/>
+            </row>
+            <row name="Frame range">
+                <option type="string" name="frameStart" value="{0}"/>
+                <option type="string" name="frameEnd" value="{1}"/>
+            </row>
+            <row name="Evaluate every">
+                <option type="float" name="alembicEval" value="1.0"/>
+            </row>
+            <row name="Alembic Selection Mode" accepts="maya">
+                <option type="radio" name="alembicExportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        """
+        s = os.getenv('FS')
+        e = os.getenv('FE')
+        xml = xml.format(s, e)
+        return xml
+
+
+class LightRigAsset(GenericAsset):
+    def __init__(self):
+        super(LightRigAsset, self).__init__()
+
+    def importAsset(self, iAObj=None):
+        GenericAsset.importAsset(self, iAObj)
+
+    def changeVersion(self, iAObj=None, applicationObject=None):
+        return GenericAsset.changeVersion(self, iAObj, applicationObject)
+
+    def publishAsset(self, iAObj=None):
+        publishedComponents = []
+        geometryComponents = GenericAsset.publishAsset(self, iAObj)
+        publishedComponents += geometryComponents
+
+        return publishedComponents, 'Published LightRigAsset asset'
+
+    @staticmethod
+    def exportOptions():
+        xml = """
+        <tab name="Houdini Scene options" accepts="houdini">
+            <row name="Houdini binary" accepts="houdini">
+                <option type="checkbox" name="houdiniBinary" value="True"/>
+            </row>
+            <row name="Houdini Selection Mode" accepts="houdini">
+                <option type="radio" name="exportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        <tab name="Alembic options">
+            <row name="Publish Alembic">
+                <option type="checkbox" name="alembic"/>
+            </row>
+            <row name="Include animation">
+                <option type="checkbox" name="alembicAnimation"/>
+            </row>
+            <row name="Frame range">
+                <option type="string" name="frameStart" value="{0}"/>
+                <option type="string" name="frameEnd" value="{1}"/>
+            </row>
+            <row name="Evaluate every">
+                <option type="float" name="alembicEval" value="1.0"/>
+            </row>
+            <row name="Alembic Selection Mode" accepts="maya">
+                <option type="radio" name="alembicExportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        """
+        s = os.getenv('FS')
+        e = os.getenv('FE')
+        xml = xml.format(s, e)
+        return xml
+
+
+class CacheAsset(GenericAsset):
+    def __init__(self):
+        super(CacheAsset, self).__init__()
+
+    def importAsset(self, iAObj=None):
+        GenericAsset.importAsset(self, iAObj)
+
+    def changeVersion(self, iAObj=None, applicationObject=None):
+        return GenericAsset.changeVersion(self, iAObj, applicationObject)
+
+    def publishAsset(self, iAObj=None):
+        publishedComponents = []
+        geometryComponents = GenericAsset.publishAsset(self, iAObj)
+        publishedComponents += geometryComponents
+
+        return publishedComponents, 'Published CacheAsset asset'
+
+    @staticmethod
+    def exportOptions():
+        xml = """
+
+        <tab name="Houdini Scene options" accepts="houdini">
+            <row name="Houdini binary" accepts="houdini">
+                <option type="checkbox" name="houdiniBinary" value="True"/>
+            </row>
+            <row name="Houdini Selection Mode" accepts="houdini">
+                <option type="radio" name="exportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        <tab name="Alembic options">
+            <row name="Publish Alembic">
+                <option type="checkbox" name="alembic"/>
+            </row>
+            <row name="Include animation">
+                <option type="checkbox" name="alembicAnimation"/>
+            </row>
+            <row name="Frame range">
+                <option type="string" name="frameStart" value="{0}"/>
+                <option type="string" name="frameEnd" value="{1}"/>
+            </row>
+            <row name="Evaluate every">
+                <option type="float" name="alembicEval" value="1.0"/>
+            </row>
+            <row name="Alembic Selection Mode" accepts="maya">
+                <option type="radio" name="alembicExportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        """
+        s = os.getenv('FS')
+        e = os.getenv('FE')
+        xml = xml.format(s, e)
+        return xml
+
+
+class FxAsset(GenericAsset):
+    def __init__(self):
+        super(FxAsset, self).__init__()
+
+    def importAsset(self, iAObj=None):
+        GenericAsset.importAsset(self, iAObj)
+
+    def changeVersion(self, iAObj=None, applicationObject=None):
+        return GenericAsset.changeVersion(self, iAObj, applicationObject)
+
+    def publishAsset(self, iAObj=None):
+        publishedComponents = []
+        geometryComponents = GenericAsset.publishAsset(self, iAObj)
+        publishedComponents += geometryComponents
+
+        return publishedComponents, 'Published FxAsset asset'
+
+    @staticmethod
+    def exportOptions():
+        xml = """
+
+        <tab name="Houdini Scene options" accepts="houdini">
+            <row name="Houdini binary" accepts="houdini">
+                <option type="checkbox" name="houdiniBinary" value="True"/>
+            </row>
+            <row name="Houdini Selection Mode" accepts="houdini">
+                <option type="radio" name="exportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        <tab name="Alembic options">
+            <row name="Publish Alembic">
+                <option type="checkbox" name="alembic"/>
+            </row>
+            <row name="Include animation">
+                <option type="checkbox" name="alembicAnimation"/>
+            </row>
+            <row name="Frame range">
+                <option type="string" name="frameStart" value="{0}"/>
+                <option type="string" name="frameEnd" value="{1}"/>
+            </row>
+            <row name="Evaluate every">
+                <option type="float" name="alembicEval" value="1.0"/>
+            </row>
+            <row name="Alembic Selection Mode" accepts="maya">
+                <option type="radio" name="alembicExportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
+        """
+        s = os.getenv('FS')
+        e = os.getenv('FE')
+        xml = xml.format(s, e)
+        return xml
 
 
 def registerAssetTypes():
     assetHandler = FTAssetHandlerInstance.instance()
     assetHandler.registerAssetType(name='geo', cls=GeometryAsset)
-    # assetHandler.registerAssetType(name='cam', cls=CameraAsset)
-    assetHandler.registerAssetType(name='scene', cls=SceneAsset)
+    assetHandler.registerAssetType(name='cam', cls=CameraAsset)
+    assetHandler.registerAssetType(name='lgt', cls=LightRigAsset)
+    assetHandler.registerAssetType(name='cache', cls=CacheAsset)
+    assetHandler.registerAssetType(name='fx', cls=FxAsset)
