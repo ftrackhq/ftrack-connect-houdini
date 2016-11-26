@@ -32,8 +32,12 @@ def setFrameRangeData():
     end_frame = float(os.getenv('FE'))
     shot_id = os.getenv('FTRACK_SHOTID')
     shot = ftrack.Shot(id=shot_id)
-    handles = float(shot.get('handles'))
     fps = shot.get('fps')
+    try:
+        handles = float(shot.get('handles'))
+    except:
+        handles = 0
+    
 
     print 'setting timeline to %s %s ' % (start_frame, end_frame)
 
