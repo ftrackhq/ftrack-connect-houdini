@@ -10,7 +10,9 @@ import re
 # -- General ------------------------------------------------------------------
 
 # Add Lowdown Extension
+
 sys.path.append(os.path.join(os.path.dirname(__file__), 'exts'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'source'))
 
 # Extensions.
 extensions = [
