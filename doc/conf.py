@@ -4,9 +4,13 @@
 '''ftrack connect houdini documentation build configuration file.'''
 
 import os
+import sys
 import re
 
 # -- General ------------------------------------------------------------------
+
+# Add Lowdown Extension
+sys.path.append(os.path.join(os.path.dirname(__file__), 'exts'))
 
 # Extensions.
 extensions = [
@@ -14,7 +18,8 @@ extensions = [
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'lowdown'
 ]
 
 
