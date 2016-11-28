@@ -45,13 +45,13 @@ def setFrameRangeData():
     hef = end_frame + handles
 
     hou.setFps(fps)
-    hou.setFrame(hsf)
+    hou.setFrame(start_frame)
 
     try:
         if start_frame != end_frame:
             hou.hscript("tset {0} {1}".format((hsf) / fps,
                         hef / fps))
-            hou.playbar.setPlaybackRange(hsf, hef)
+            hou.playbar.setPlaybackRange(start_frame, end_frame)
     except IndexError:
         pass
 
