@@ -270,6 +270,7 @@ class GeometryAsset(GenericAsset):
 
             # Create Rop Net
             ropNet = objPath.createNode('ropnet')
+            print ropNet.path()
             abcRopnet = ropNet.createNode('alembic')
 
             if iAObj.options.get('alembicAnimation'):
@@ -277,8 +278,8 @@ class GeometryAsset(GenericAsset):
                 abcRopnet.parm('trange').set(1)
                 for i, x in enumerate(
                         ['frameStart', 'frameEnd', 'alembicEval']):
-                    abcRopnet.parm('f%s' % i + 1).deleteAllKeyframes()
-                    abcRopnet.parm('f%s' % i + 1).set(iAObj.options[x])
+                    abcRopnet.parm('f%d' % (i + 1)).deleteAllKeyframes()
+                    abcRopnet.parm('f%d' % (i + 1)).set(iAObj.options[x])
             else:
                 abcRopnet.parm('trange').set(0)
 
@@ -315,7 +316,7 @@ class GeometryAsset(GenericAsset):
                 <option type="checkbox" name="alembic" value="True"/>
             </row>
             <row name="Include animation">
-                <option type="checkbox" name="alembicAnimation"/>
+                <option type="checkbox" name="alembicAnimation" value="False"/>
             </row>
             <row name="Frame range">
                 <option type="string" name="frameStart" value="{0}"/>
