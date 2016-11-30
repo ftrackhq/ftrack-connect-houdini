@@ -17,34 +17,6 @@ class Connector(maincon.Connector):
         super(Connector, self).__init__()
 
     @staticmethod
-    def setTimeLine():
-        '''Set time line to FS , FE environment values'''
-        import ftrack
-        start_frame = float(os.getenv('FS'))
-        end_frame = float(os.getenv('FE'))
-        shot_id = os.getenv('FTRACK_SHOTID')
-        shot = ftrack.Shot(id=shot_id)
-        handles = float(shot.get('handles'))
-        fps = shot.get('fps')
-
-        print 'setting timeline to %s %s ' % (start_frame, end_frame)
-
-        # add handles to start and end frame
-        hsf = (start_frame - 1) - handles
-        hef = end_frame + handles
-
-        hou.setFps(fps)
-        hou.setFrame(hsf)
-
-        try:
-            if start_frame != end_frame:
-                hou.hscript("tset {0} {1}".format(hsf / fps,
-                            hef / fps))
-                hou.playbar.setPlaybackRange(hsf, hef)
-        except IndexError:
-            pass
-
-    @staticmethod
     def getAssets():
         '''Return the available assets in scene, return the *componentId(s)*'''
         componentIds = []
@@ -187,7 +159,7 @@ class Connector(maincon.Connector):
 
     # Make certain scene validations before actualy publishing
     @classmethod
-    def prePublish(cls, iAObj):
+    def prePublish(cls, iAObj, assetType=''):
         '''Pre Publish check for given *iAObj*'''
         result, message = super(Connector, cls).prePublish(iAObj)
         if not result:
@@ -205,6 +177,11 @@ class Connector(maincon.Connector):
                 iAObj.options['alembicExportMode'] == 'Selection'
             ):
                 return None, 'Nothing selected'
+        elif assetType == 'cam':
+            if len(nodes) != 1:
+                return None, 'Select Only One Camera Object'
+            elif len(nodes) == 1 and ('cam' not in nodes[0].type().name()):
+                return None, 'Select Camera Object'
 
         return True, ''
 

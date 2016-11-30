@@ -13,6 +13,7 @@ For now supported asset types are:
 
 * Scene
 * Geometry
+* Camera
 
 To publish a new asset or version up an existing, simply select it in your scene
 and bring up the publish asset dialog from the ftrack menu. Select the task you
