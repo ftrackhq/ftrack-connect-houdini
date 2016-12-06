@@ -31,14 +31,9 @@ class GenericAsset(FTAssetType):
             hou.hscript(
                 "opparm -C {0} buildHierarchy (1)".format(
                     resultingNode.path()))
+            resultingNode.moveToGoodPosition()
             self.addFTab(resultingNode)
             self.setFTab(resultingNode, iAObj)
-
-        # TODO: Add import Bgeo
-        # elif 'bgeo' in iAObj.componentName:
-        #     geoNode = hou.node('/obj').createNode('geo')
-        #     fileSop = geoNode.children()[0]
-        #     fileSop.parm('file').set(iAObj.filePath)
 
         elif iAObj.componentName == 'houdiniPublishScene':
             # Load Houdini Published Scene
@@ -52,6 +47,7 @@ class GenericAsset(FTAssetType):
                 'subnet', iAObj.assetName)
             resultingNode.loadChildrenFromFile(iAObj.filePath)
             resultingNode.setSelected(1)
+            resultingNode.moveToGoodPosition()
             self.addFTab(resultingNode)
             self.setFTab(resultingNode, iAObj)
 
@@ -381,6 +377,7 @@ class CameraAsset(GenericAsset):
             GenericAsset.setFTab(self, resCam, iAObj)
             resultingNode.destroy()
             resCam.setName(iAObj.assetName)
+            resCam.moveToGoodPosition()
 
             return 'Imported ' + iAObj.assetType + ' asset'
 
@@ -530,35 +527,8 @@ class CameraAsset(GenericAsset):
         return xml
 
 
-class CacheAsset(GenericAsset):
-    def __init__(self):
-        super(CacheAsset, self).__init__()
-
-    def publishAsset(self, iAObj=None):
-        panelComInstance = panelcom.PanelComInstance.instance()
-        panelComInstance.setTotalExportSteps(1)
-        iAObj.customComponentName = 'houdiniPublishScene'
-        components, message = GenericAsset.publishAsset(self, iAObj)
-        return components, message
-
-    @staticmethod
-    def exportOptions():
-        xml = """
-        <tab name="Houdini Scene options" accepts="houdini">
-            <row name="Houdini Selection Mode" accepts="houdini">
-                <option type="radio" name="exportMode">
-                        <optionitem name="All" value="True"/>
-                        <optionitem name="Selection"/>
-                </option>
-            </row>
-        </tab>
-        """
-        return xml
-
-
 def registerAssetTypes():
     assetHandler = FTAssetHandlerInstance.instance()
     assetHandler.registerAssetType(name='scene', cls=SceneAsset)
     assetHandler.registerAssetType(name='geo', cls=GeometryAsset)
     assetHandler.registerAssetType(name='cam', cls=CameraAsset)
-    assetHandler.registerAssetType(name='cache', cls=CacheAsset)
