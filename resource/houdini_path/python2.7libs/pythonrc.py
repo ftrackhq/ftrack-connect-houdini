@@ -34,15 +34,20 @@ send_event(
 
 def setFrameRangeData():
 
-    start_frame = float(os.getenv('FS'))
-    end_frame = float(os.getenv('FE'))
+    start_frame = float(os.getenv('FS', 1001))
+    end_frame = float(os.getenv('FE', 1101))
     shot_id = os.getenv('FTRACK_SHOTID')
-    shot = ftrack.Shot(id=shot_id)
-    fps = shot.get('fps')
-    if 'handles' in shot.keys():
-        handles = float(shot.get('handles'))
-    else:
-        handles = 0.0
+    fps = 24
+    handles = 0.0
+
+    try:
+
+        shot = ftrack.Shot(id=shot_id)
+        fps = shot.get('fps')
+        if 'handles' in shot.keys():
+            handles = float(shot.get('handles'))
+    except ftrack.FtrackError as error:
+        print error
 
     print 'setting timeline to %s %s ' % (start_frame, end_frame)
 
