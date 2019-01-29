@@ -2,7 +2,7 @@
 ftrack connect houdini
 ###############################
 
-Houdini integration with ftrack.
+Community owned Houdini integration for ftrack.
 
 *************
 Documentation
