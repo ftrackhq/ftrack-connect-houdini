@@ -95,7 +95,8 @@ class BuildPlugin(Command):
                 'install',
                 '.',
                 '--target',
-                os.path.join(STAGING_PATH, 'dependencies')
+                os.path.join(STAGING_PATH, 'dependencies'),
+                '--process-dependency-links'
             ]
         )
 

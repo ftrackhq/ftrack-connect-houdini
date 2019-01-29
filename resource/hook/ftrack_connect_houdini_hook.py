@@ -244,7 +244,10 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
         # existing values on that variable.
 
         # Add my custom path to the HOUDINI_SCRIPT_PATH.
+
         # & is a special character meaning the default path
+        # see : http://www.sidefx.com/docs/houdini/basics/config_env.html
+
         environment = ftrack_connect.application.appendPath(
             os.path.pathsep.join([houdini_connect_plugins, '&']),
             'HOUDINI_PATH',
