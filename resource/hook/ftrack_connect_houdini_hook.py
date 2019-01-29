@@ -153,14 +153,18 @@ class ApplicationStore(ftrack_connect.application.ApplicationStore):
         if sys.platform == 'darwin':
             prefix = ['/', 'Applications']
 
-            applications.extend(self._searchFilesystem(
-                expression=prefix + [
-                    'Houdini*', 'Houdini.app'
-                ],
-                label='Houdini {version}',
-                icon='houdini',
-                applicationIdentifier='houdini_{version}'
-            ))
+            for product in ('Apprentice', 'Core', 'FX', 'Indie'):
+                applications.extend(self._searchFilesystem(
+                    expression=prefix + ['Houdini', 'Houdini.*',
+                                         'Houdini {0}.*\.app'.format(product)
+                                         ],
+                    label='Houdini {0}'.format(product),
+                    variant='{version}',
+                    icon='houdini',
+                    applicationIdentifier='houdini_{0}_{{version}}'.format(
+                        product
+                    )
+                ))
 
         elif 'linux' in sys.platform:
             prefix = ['/', 'opt']
@@ -240,6 +244,7 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
         # existing values on that variable.
 
         # Add my custom path to the HOUDINI_SCRIPT_PATH.
+        # & is a special character meaning the default path
         environment = ftrack_connect.application.appendPath(
             os.path.pathsep.join([houdini_connect_plugins, '&']),
             'HOUDINI_PATH',
