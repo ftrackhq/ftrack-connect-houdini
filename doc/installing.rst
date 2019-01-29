@@ -29,16 +29,15 @@ copy of the source by either downloading the
 `zipball <https://bitbucket.org/ftrack/ftrack-connect-houdini/get/master.zip>`_ or
 cloning the public repository::
 
-    git clone git@bitbucket.org:postmodern_dev/ftrack-connect-houdini.git
+    git clone git@bitbucket.org:ftrack/ftrack-connect-houdini.git
 
 Then you can build and install the package into your current Python
 site-packages folder::
 
-    python setup.py install
+    python setup.py build_plugin
 
-Alternatively, just build locally and manage yourself::
-
-    python setup.py build
+The result plugin will then be available under the build folder.
+Copy or symlink the result plugin folder in your FTRACK_CONNECT_PLUGIN_PATH.
 
 Building documentation from source
 ----------------------------------

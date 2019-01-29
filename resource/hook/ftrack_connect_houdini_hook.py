@@ -7,15 +7,15 @@ import pprint
 import logging
 import os
 
-# RESOURCE_DIRECTORY = os.path.abspath(
-#     os.path.join(os.path.dirname(__file__), '..', 'resource')
-# )
-
-# if RESOURCE_DIRECTORY not in sys.path:
-#     sys.path.append(RESOURCE_DIRECTORY)
-
 import ftrack
 import ftrack_connect.application
+
+cwd = os.path.dirname(__file__)
+sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
+ftrack_connect_houdini_resource_path = os.path.abspath(os.path.join(cwd, '..',  'resource'))
+sys.path.append(sources)
+
+
 import ftrack_connect_houdini
 
 
@@ -106,7 +106,7 @@ class HoudiniAction(object):
                 'actionIdentifier': self.identifier,
                 'label': label,
                 'variant': application.get('variant', None),
-                'icon': 'https://s15.postimg.org/wrufi6417/houdini.png',
+                'icon': 'https://pbs.twimg.com/profile_images/591261575459147776/gGF9ZzJd_400x400.jpg',
                 'applicationIdentifier': applicationIdentifier
             })
 
@@ -116,26 +116,12 @@ class HoudiniAction(object):
 
     def launch(self, event):
         '''Callback method for Houdini action.'''
-        # applicationIdentifier = (
-        #     event['data']['applicationIdentifier']
-        # )
-
-        # context = event['data'].copy()
-
-        # return self.launcher.launch(
-        #     applicationIdentifier, context
-        # )
-        #########################################
         event.stop()
 
         if not self.is_valid_selection(
             event['data'].get('selection', [])
         ):
             return
-
-        application_identifier = (
-            event['data']['applicationIdentifier']
-        )
 
         context = event['data'].copy()
         context['source'] = event['source']
@@ -167,14 +153,18 @@ class ApplicationStore(ftrack_connect.application.ApplicationStore):
         if sys.platform == 'darwin':
             prefix = ['/', 'Applications']
 
-            applications.extend(self._searchFilesystem(
-                expression=prefix + [
-                    'Houdini*', 'Houdini.app'
-                ],
-                label='Houdini {version}',
-                icon='houdini',
-                applicationIdentifier='houdini_{version}'
-            ))
+            for product in ('Apprentice', 'Core', 'FX', 'Indie'):
+                applications.extend(self._searchFilesystem(
+                    expression=prefix + ['Houdini', 'Houdini.*',
+                                         'Houdini {0}.*\.app'.format(product)
+                                         ],
+                    label='Houdini {0}'.format(product),
+                    variant='{version}',
+                    icon='houdini',
+                    applicationIdentifier='houdini_{0}_{{version}}'.format(
+                        product
+                    )
+                ))
 
         elif 'linux' in sys.platform:
             prefix = ['/', 'opt']
@@ -254,6 +244,10 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
         # existing values on that variable.
 
         # Add my custom path to the HOUDINI_SCRIPT_PATH.
+
+        # & is a special character meaning the default path
+        # see : http://www.sidefx.com/docs/houdini/basics/config_env.html
+
         environment = ftrack_connect.application.appendPath(
             os.path.pathsep.join([houdini_connect_plugins, '&']),
             'HOUDINI_PATH',
@@ -261,16 +255,17 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
         )
 
         environment = ftrack_connect.application.appendPath(
-            self.plugin_path,
+            houdini_connect_plugins,
             'PYTHONPATH',
             environment
         )
 
         environment = ftrack_connect.application.appendPath(
-            os.path.join(self.plugin_path, '..', 'resource'),
+            sources,
             'PYTHONPATH',
             environment
         )
+
         # Always return the environment at the end.
         return environment
 
@@ -292,11 +287,7 @@ def register(registry, **kw):
     launcher = ApplicationLauncher(
         application_store, plugin_path=os.environ.get(
             'FTRACK_CONNECT_HOUDINI_PLUGINS_PATH',
-            os.path.abspath(
-                os.path.join(
-                    os.path.dirname(__file__), '..', 'ftrack_connect_houdini'
-                )
-            )
+            ftrack_connect_houdini_resource_path
         )
     )
 
