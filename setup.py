@@ -7,6 +7,11 @@ import shutil
 
 from setuptools.command.test import test as TestCommand
 from setuptools import setup, find_packages, Command
+from pkg_resources import parse_version
+import pip
+
+if parse_version(pip.__version__) < parse_version('19.3.0'):
+    raise ValueError('Pip should be version 19.3.0 or higher')
 
 from pip._internal import main as pip_main
 
@@ -90,13 +95,12 @@ class BuildPlugin(Command):
         )
 
         # Install local dependencies
-        pip_main(
+        pip_main.main(
             [
                 'install',
                 '.',
                 '--target',
-                os.path.join(STAGING_PATH, 'dependencies'),
-                '--process-dependency-links'
+                os.path.join(STAGING_PATH, 'dependencies')
             ]
         )
 
