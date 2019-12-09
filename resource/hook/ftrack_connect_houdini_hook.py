@@ -98,6 +98,9 @@ class HoudiniAction(object):
         applications = sorted(
             applications, key=lambda application: application['label']
         )
+        icon_path = '/'.join(
+            [os.getenv('FTRACK_SERVER'), 'application_icons', 'houdini.png']
+        )
 
         for application in applications:
             applicationIdentifier = application['identifier']
@@ -106,7 +109,7 @@ class HoudiniAction(object):
                 'actionIdentifier': self.identifier,
                 'label': label,
                 'variant': application.get('variant', None),
-                'icon': 'https://pbs.twimg.com/profile_images/591261575459147776/gGF9ZzJd_400x400.jpg',
+                'icon': icon_path,
                 'applicationIdentifier': applicationIdentifier
             })
 
