@@ -131,8 +131,6 @@ class PublishAssetDialog(QtWidgets.QDialog):
         self.exportOptionsWidget.setComment('')
         self.exportOptionsWidget.ui.thumbnailLineEdit.setText('')
 
-        print self.currentEntity
-
         self.exportAssetOptionsWidget.updateTasks(self.currentEntity)
         self.exportAssetOptionsWidget.updateView(self.currentEntity)
 
