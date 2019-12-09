@@ -143,6 +143,7 @@ setup(
         'build_plugin': BuildPlugin,
     },
     install_requires=[
-        'appdirs'
+        'appdirs',
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2'
     ]
 )

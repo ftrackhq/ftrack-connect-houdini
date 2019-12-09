@@ -13,7 +13,7 @@ import ftrack_connect.application
 cwd = os.path.dirname(__file__)
 sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
 ftrack_connect_houdini_resource_path = os.path.abspath(os.path.join(cwd, '..',  'resource'))
-sys.path.append(sources)
+sys.path.insert(0, sources)
 
 
 import ftrack_connect_houdini
@@ -98,6 +98,9 @@ class HoudiniAction(object):
         applications = sorted(
             applications, key=lambda application: application['label']
         )
+        icon_path = '/'.join(
+            [os.getenv('FTRACK_SERVER'), 'application_icons', 'houdini.png']
+        )
 
         for application in applications:
             applicationIdentifier = application['identifier']
@@ -106,7 +109,7 @@ class HoudiniAction(object):
                 'actionIdentifier': self.identifier,
                 'label': label,
                 'variant': application.get('variant', None),
-                'icon': 'https://pbs.twimg.com/profile_images/591261575459147776/gGF9ZzJd_400x400.jpg',
+                'icon': icon_path,
                 'applicationIdentifier': applicationIdentifier
             })
 
@@ -260,11 +263,12 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
             environment
         )
 
-        environment = ftrack_connect.application.appendPath(
+        environment = ftrack_connect.application.prependPath(
             sources,
             'PYTHONPATH',
             environment
         )
+        environment['QT_PREFERRED_BINDING'] = os.pathsep.join(['PySide2', 'PySide'])
 
         # Always return the environment at the end.
         return environment

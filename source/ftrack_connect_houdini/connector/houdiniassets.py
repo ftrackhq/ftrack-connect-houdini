@@ -262,7 +262,6 @@ class GeometryAsset(GenericAsset):
 
             # Create Rop Net
             ropNet = objPath.createNode('ropnet')
-            print ropNet.path()
             abcRopnet = ropNet.createNode('alembic')
 
             if iAObj.options.get('alembicAnimation'):
