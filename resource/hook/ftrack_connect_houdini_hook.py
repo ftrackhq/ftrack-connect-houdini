@@ -265,6 +265,7 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
             'PYTHONPATH',
             environment
         )
+        environment['QT_PREFERRED_BINDING'] = os.pathsep.join(['PySide2', 'PySide'])
 
         # Always return the environment at the end.
         return environment
