@@ -143,6 +143,7 @@ setup(
         'build_plugin': BuildPlugin,
     },
     install_requires=[
-        'appdirs'
+        'appdirs',
+        'qt.py >=1.0.0, < 2'
     ]
 )

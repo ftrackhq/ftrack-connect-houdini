@@ -13,7 +13,7 @@ import ftrack_connect.application
 cwd = os.path.dirname(__file__)
 sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
 ftrack_connect_houdini_resource_path = os.path.abspath(os.path.join(cwd, '..',  'resource'))
-sys.path.append(sources)
+sys.path.insert(0, sources)
 
 
 import ftrack_connect_houdini
@@ -260,7 +260,7 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
             environment
         )
 
-        environment = ftrack_connect.application.appendPath(
+        environment = ftrack_connect.application.prependPath(
             sources,
             'PYTHONPATH',
             environment
