@@ -46,7 +46,7 @@ def setFrameRangeData():
         fps = shot.get('fps')
         if 'handles' in shot.keys():
             handles = float(shot.get('handles'))
-    except ftrack.FtrackError as error:
+    except Exception as error:
         print error
 
     print 'setting timeline to %s %s ' % (start_frame, end_frame)
