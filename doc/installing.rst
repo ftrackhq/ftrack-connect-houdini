@@ -55,7 +55,6 @@ Dependencies
 
 * `Python <http://python.org>`_ >= 2.6, < 3
 * `ftrack connect <https://bitbucket.org/ftrack/ftrack-connect>`_ >= 0.1.2, < 2
-* `houdini <http://www.autodesk.com/products/houdini/overview>`_ >= 2014, <= 2016
 
 Additional For building
 -----------------------
