@@ -9,6 +9,6 @@ Documentation
 *************
 
 Full documentation, including installation and setup guides, can be found at
-http://ftrack-connect-houdini.readthedocs.io/en/latest
+http://ftrack-connect-houdini.rtd.ftrack.com/en/latest
 
 This is a Branch from https://bitbucket.org/ftrack/ftrack-connect-maya
