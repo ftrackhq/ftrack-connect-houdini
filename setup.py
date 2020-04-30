@@ -122,7 +122,7 @@ setup(
     description='Houdini integration with ftrack.',
     long_description=open(README_PATH).read(),
     keywords='',
-    url='https://bitbucket.org/postmodern_dev/ftrack-connect-houdini',
+    url='https://bitbucket.org/ftrack/ftrack-connect-houdini',
     author='postmodern',
     author_email='m.datcik@postmoden.ua',
     license='Apache License (2.0)',
