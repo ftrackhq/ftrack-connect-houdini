@@ -9,7 +9,13 @@ Release Notes
 
 .. release:: Upcoming
 
-    .. change:: change
+    .. change:: chaged
+        :tags: Internal
+
+        Add file logger.
+
+    .. change:: changed
+        :tags: Internal
 
         Update pyside signal signature for pyside2 compatiblity.
 

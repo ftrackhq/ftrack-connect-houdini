@@ -5,6 +5,7 @@ import hou
 import ftrack
 import tempfile
 
+import ftrack_connect.config
 from ftrack_connect.ui.widget.import_asset import FtrackImportAssetDialog
 from ftrack_connect.ui.widget.asset_manager import FtrackAssetManagerDialog
 
@@ -30,6 +31,7 @@ currentEntity = ftrack.Task(
 send_event(
     'USED-FTRACK-CONNECT-HOUDINI'
 )
+
 
 
 def setFrameRangeData():
@@ -147,3 +149,7 @@ def showDialog(name):
             currentEntity=currentEntity, connector=connector)
 
     return dialog
+
+ftrack_connect.config.configure_logging(
+    'ftrack_connect_houdini', level='WARNING'
+)
