@@ -75,7 +75,7 @@ class GenericAsset(FTAssetType):
                 <row name="Export End Effectors">
                     <option type="checkbox" name="fbxEEE" value="True"/>
                 </row>
-  
+
     """
 
     def __init__(self):
@@ -84,8 +84,8 @@ class GenericAsset(FTAssetType):
     def importAsset(self, iAObj=None):
 
         if (
-            iAObj.componentName == 'alembic' or
-            iAObj.filePath.endswith('abc')
+                iAObj.componentName == 'alembic' or
+                iAObj.filePath.endswith('abc')
         ):
             resultingNode = hou.node('/obj').createNode(
                 'alembicarchive', iAObj.assetName)
@@ -99,8 +99,8 @@ class GenericAsset(FTAssetType):
             self.setFTab(resultingNode, iAObj)
 
         elif (
-            iAObj.componentName == 'fbx' or
-            iAObj.filePath.endswith('fbx')
+                iAObj.componentName == 'fbx' or
+                iAObj.filePath.endswith('fbx')
         ):
             hou.hipFile.importFBX(iAObj.filePath)
 
@@ -258,7 +258,7 @@ class GenericAsset(FTAssetType):
 
     @staticmethod
     def parseComboBoxNameValue(name):
-        return name[name.rfind("{")+1:name.rfind("}")]
+        return name[name.rfind("{") + 1:name.rfind("}")]
 
 
 class SceneAsset(GenericAsset):
@@ -285,6 +285,7 @@ class SceneAsset(GenericAsset):
         </tab>
         """
         return xml
+
 
 class GeometryAsset(GenericAsset):
     def __init__(self):
@@ -403,14 +404,17 @@ class GeometryAsset(GenericAsset):
             fbxRopnet.parm('sdkversion').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxSDKVersion')))
             fbxRopnet.parm('vcformat').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxVCF')))
             fbxRopnet.parm('invisobj').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxEIO')))
-            fbxRopnet.parm('axissystem').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxAS')))
             fbxRopnet.parm('polylod').set(iAObj.options.get('fbxCLOD'))
             fbxRopnet.parm('detectconstpointobjs').set(iAObj.options.get('fbxDCPCDO'))
             fbxRopnet.parm('convertsurfaces').set(iAObj.options.get('fbxCNABSTP'))
             fbxRopnet.parm('conservemem').set(iAObj.options.get('fbxCMATEOET'))
             fbxRopnet.parm('forceblendshape').set(iAObj.options.get('fbxFBSE'))
             fbxRopnet.parm('forceskindeform').set(iAObj.options.get('fbxFSDE'))
-            fbxRopnet.parm('exportendeffectors').set(iAObj.options.get('fbxEEE'))
+            try:
+                fbxRopnet.parm('axissystem').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxAS')))
+                fbxRopnet.parm('exportendeffectors').set(iAObj.options.get('fbxEEE'))
+            except:
+                pass  # No supported in older versions
             try:
                 fbxRopnet.render()
             finally:
@@ -572,7 +576,6 @@ class CameraAsset(GenericAsset):
                                  iAObj.options['frameEnd']])
 
         if iAObj.options['houdiniNodes']:
-
             temporaryPath = HelpFunctions.temporaryFile(suffix='.hip')
 
             publishedComponents.append(
@@ -656,17 +659,20 @@ class CameraAsset(GenericAsset):
             fbxRopnet.parm('sopoutput').set(temporaryPath)
             fbxRopnet.parm('startnode').set(selectednodes[0].parent().path())
             fbxRopnet.parm('exportkind').set(iAObj.options.get('fbxASCII'))
-            fbxRopnet.parm('sdkversion').set(iAObj.options.get('fbxSDKVersion'))
-            fbxRopnet.parm('vcformat').set(iAObj.options.get('fbxVCF'))
-            fbxRopnet.parm('invisobj').set(iAObj.options.get('fbxEIO'))
-            fbxRopnet.parm('axissystem').set(iAObj.options.get('fbxAS'))
+            fbxRopnet.parm('sdkversion').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxSDKVersion')))
+            fbxRopnet.parm('vcformat').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxVCF')))
+            fbxRopnet.parm('invisobj').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxEIO')))
             fbxRopnet.parm('polylod').set(iAObj.options.get('fbxCLOD'))
             fbxRopnet.parm('detectconstpointobjs').set(iAObj.options.get('fbxDCPCDO'))
             fbxRopnet.parm('convertsurfaces').set(iAObj.options.get('fbxCNABSTP'))
             fbxRopnet.parm('conservemem').set(iAObj.options.get('fbxCMATEOET'))
             fbxRopnet.parm('forceblendshape').set(iAObj.options.get('fbxFBSE'))
             fbxRopnet.parm('forceskindeform').set(iAObj.options.get('fbxFSDE'))
-            fbxRopnet.parm('exportendeffectors').set(iAObj.options.get('fbxEEE'))
+            try:
+                fbxRopnet.parm('axissystem').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxAS')))
+                fbxRopnet.parm('exportendeffectors').set(iAObj.options.get('fbxEEE'))
+            except:
+                pass  # No supported in older versions
             try:
                 fbxRopnet.render()
             finally:
@@ -730,4 +736,3 @@ def registerAssetTypes():
     assetHandler.registerAssetType(name='scene', cls=SceneAsset)
     assetHandler.registerAssetType(name='geo', cls=GeometryAsset)
     assetHandler.registerAssetType(name='cam', cls=CameraAsset)
-                 
