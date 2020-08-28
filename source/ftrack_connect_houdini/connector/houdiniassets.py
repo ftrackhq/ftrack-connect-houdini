@@ -1,4 +1,5 @@
 import hou
+
 import ftrack
 
 import os
@@ -15,6 +16,68 @@ from ftrack_connect.connector import panelcom
 
 
 class GenericAsset(FTAssetType):
+    FBX_EXPORT_OPTIONS = """
+                <row name="ASCII">
+                    <option type="checkbox" name="fbxASCII" value="True"/>
+                </row>
+                <row name="SDK Version" accepts="houdini">
+                    <option type="combo" name="fbxSDKVersion">
+                            <optionitem name="FBX | FBX201600 {FBX | FBX201600}"/>
+                            <optionitem name="FBX | FBX201400 {FBX | FBX201400}"/>
+                            <optionitem name="FBX | FBX201300 {FBX | FBX201300}"/>
+                            <optionitem name="FBX | FBX201200 {FBX | FBX201200}"/>
+                            <optionitem name="FBX | FBX201100 {FBX | FBX201100}"/>
+                            <optionitem name="FBX 6.0 | FBX201000 {FBX 6.0 | FBX201000}"/>
+                            <optionitem name="FBX 6.0 | FBX200900 {FBX 6.0 | FBX200900}"/>
+                            <optionitem name="FBX 6.0 | FBX200611 {FBX 6.0 | FBX200611}"/>
+                    </option>
+                </row>
+                <row name="Vertex Cache Format" accepts="houdini">
+                    <option type="combo" name="fbxVCF">
+                            <optionitem name="Maya Compatible (MC) {mayaformat}"/>
+                            <optionitem name="3DS Max Compatible (PC2) {maxformat}"/>
+                    </option>
+                </row>
+                <row name="Export Invisible Objects" accepts="houdini">
+                    <option type="combo" name="fbxEIO">
+                            <optionitem name="As hidden null nodes {nullnodes}"/>
+                            <optionitem name="As hidden full nodes {fullnodes}"/>
+                            <optionitem name="As visible full nodes {visiblenodes}"/>
+                            <optionitem name="Don't export {nonodes}"/>
+                    </option>
+                </row>
+                <row name="Axis system" accepts="houdini">
+                    <option type="combo" name="fbxAS">
+                            <optionitem name="Y Up (Right-handed) {yupright}"/>
+                            <optionitem name="Y Up (Left-handed) {yupleft}"/>
+                            <optionitem name="Z Up (Right-handed) {zupright}"/>
+                            <optionitem name="Current (Y up Right-handed) {currentup}"/>
+                    </option>
+                </row>
+                <row name="Conversion Level of Detail">
+                    <option type="float" name="fbxCLOD" value="1.0"/>
+                </row>
+                <row name="Detect Constant Point Count Dynamic Objects">
+                    <option type="checkbox" name="fbxDCPCDO" value="True"/>
+                </row>
+                <row name="Convert NURBS and Beizer Surface to Polygons">
+                    <option type="checkbox" name="fbxCNABSTP" value="False"/>
+                </row>
+                <row name="Conserve Memory at the Expense of Export Time">
+                    <option type="checkbox" name="fbxCMATEOET" value="False"/>
+                </row>
+                <row name="Force Blend Shape Export">
+                    <option type="checkbox" name="fbxFBSE" value="False"/>
+                </row>
+                <row name="Force Skin Deform Export">
+                    <option type="checkbox" name="fbxFSDE" value="False"/>
+                </row>
+                <row name="Export End Effectors">
+                    <option type="checkbox" name="fbxEEE" value="True"/>
+                </row>
+  
+    """
+
     def __init__(self):
         super(GenericAsset, self).__init__()
 
@@ -34,6 +97,12 @@ class GenericAsset(FTAssetType):
             resultingNode.moveToGoodPosition()
             self.addFTab(resultingNode)
             self.setFTab(resultingNode, iAObj)
+
+        elif (
+            iAObj.componentName == 'fbx' or
+            iAObj.filePath.endswith('fbx')
+        ):
+            hou.hipFile.importFBX(iAObj.filePath)
 
         elif iAObj.componentName == 'houdiniPublishScene':
             # Load Houdini Published Scene
@@ -68,42 +137,58 @@ class GenericAsset(FTAssetType):
 
         publishedComponents = []
 
-        temporaryPath = HelpFunctions.temporaryFile(suffix='.hip')
+        # handle houdini scene
+        if (
+                componentName == 'houdiniPublishScene'
+        ):
+            temporaryPath = HelpFunctions.temporaryFile(suffix='.hip')
 
-        publishedComponents.append(
-            FTComponent(
-                componentname=componentName,
-                path=temporaryPath
+            if iAObj.options['exportMode'] == 'Selection':
+                # Publish Main Scene in selection mode
+                hou.copyNodesToClipboard(hou.selectedNodes())
+
+                command = "hou.pasteNodesFromClipboard(hou.node('/obj'));\
+                hou.hipFile.save('%s')" % (temporaryPath)
+
+                cmd = '%s -c "%s"' % (os.path.join(
+                    os.getenv('HFS'), 'bin', 'hython'), command)
+                os.system(cmd)
+            else:
+                hou.hipFile.save(temporaryPath)
+
+            publishedComponents.append(
+                FTComponent(
+                    componentname=componentName,
+                    path=temporaryPath
+                )
             )
-        )
-
-        if 'exportMode' in iAObj.options and (
-                iAObj.options['exportMode'] == 'Selection') and (
-                    componentName == 'houdiniNodes'):
-            ''' Publish Selected Nodes'''
-            selectednodes = hou.selectedNodes()
-            selectednodes[0].parent().saveChildrenToFile(
-                selectednodes, [], temporaryPath)
 
             panelComInstance.emitPublishProgressStep()
 
-        elif componentName == 'houdiniPublishScene' and (
-                iAObj.options['exportMode'] == 'Selection'):
-            # Publish Main Scene in selection mode
-            hou.copyNodesToClipboard(hou.selectedNodes())
+        # handle houdini nodes
+        if (
+                componentName == 'houdiniNodes'
+        ):
+            temporaryPath = HelpFunctions.temporaryFile(suffix='.hip')
 
-            command = "hou.pasteNodesFromClipboard(hou.node('/obj'));\
-            hou.hipFile.save('%s')" % (temporaryPath)
+            if iAObj.options['exportMode'] == 'Selection':
+                ''' Publish Selected Nodes'''
+                selectednodes = hou.selectedNodes()
+                selectednodes[0].parent().saveChildrenToFile(
+                    selectednodes, [], temporaryPath)
+            else:
+                ''' Publish All Nodes'''
+                rootnode = hou.node('/obj')
+                rootnode.saveChildrenToFile(rootnode.children(), [], temporaryPath)
 
-            cmd = '%s -c "%s"' % (os.path.join(
-                os.getenv('HFS'), 'bin', 'hython'), command)
-            os.system(cmd)
+            publishedComponents.append(
+                FTComponent(
+                    componentname=componentName,
+                    path=temporaryPath
+                )
+            )
 
-        elif componentName == 'houdiniPublishScene':
-            # Publish Main Scene
-            hou.hipFile.save(temporaryPath)
-
-        panelComInstance.emitPublishProgressStep()
+            panelComInstance.emitPublishProgressStep()
 
         return publishedComponents, 'Published ' + iAObj.assetType + ' asset'
 
@@ -171,6 +256,10 @@ class GenericAsset(FTAssetType):
                     self.setFTab(n, iAObj)
                     return True
 
+    @staticmethod
+    def parseComboBoxNameValue(name):
+        return name[name.rfind("{")+1:name.rfind("}")]
+
 
 class SceneAsset(GenericAsset):
     def __init__(self):
@@ -197,7 +286,6 @@ class SceneAsset(GenericAsset):
         """
         return xml
 
-
 class GeometryAsset(GenericAsset):
     def __init__(self):
         super(GeometryAsset, self).__init__()
@@ -220,6 +308,7 @@ class GeometryAsset(GenericAsset):
             steps=[
                 iAObj.options['houdiniNodes'],
                 iAObj.options['alembic'],
+                iAObj.options['fbx'],
                 iAObj.options['houdiniPublishScene']
             ]
         )
@@ -283,6 +372,52 @@ class GeometryAsset(GenericAsset):
 
             panelComInstance.emitPublishProgressStep()
 
+        if iAObj.options.get('fbx'):
+            ''' Export FBX'''
+            temporaryPath = HelpFunctions.temporaryFile(suffix='.fbx')
+
+            publishedComponents.append(
+                FTComponent(
+                    componentname='fbx',
+                    path=temporaryPath
+                )
+            )
+
+            objPath = hou.node('/obj')
+
+            # Selection Objects Set
+            if iAObj.options.get('fbxExportMode') == 'Selection':
+                selectednodes = hou.selectedNodes()
+                objects = ' '.join([x.path() for x in selectednodes])
+            else:
+                selectednodes = objPath.glob('*')
+                objects = '*'
+
+            # Create Rop Net
+            ropNet = objPath.createNode('ropnet')
+            fbxRopnet = ropNet.createNode('filmboxfbx')
+
+            fbxRopnet.parm('sopoutput').set(temporaryPath)
+            fbxRopnet.parm('startnode').set(selectednodes[0].parent().path())
+            fbxRopnet.parm('exportkind').set(iAObj.options.get('fbxASCII'))
+            fbxRopnet.parm('sdkversion').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxSDKVersion')))
+            fbxRopnet.parm('vcformat').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxVCF')))
+            fbxRopnet.parm('invisobj').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxEIO')))
+            fbxRopnet.parm('axissystem').set(GenericAsset.parseComboBoxNameValue(iAObj.options.get('fbxAS')))
+            fbxRopnet.parm('polylod').set(iAObj.options.get('fbxCLOD'))
+            fbxRopnet.parm('detectconstpointobjs').set(iAObj.options.get('fbxDCPCDO'))
+            fbxRopnet.parm('convertsurfaces').set(iAObj.options.get('fbxCNABSTP'))
+            fbxRopnet.parm('conservemem').set(iAObj.options.get('fbxCMATEOET'))
+            fbxRopnet.parm('forceblendshape').set(iAObj.options.get('fbxFBSE'))
+            fbxRopnet.parm('forceskindeform').set(iAObj.options.get('fbxFSDE'))
+            fbxRopnet.parm('exportendeffectors').set(iAObj.options.get('fbxEEE'))
+            try:
+                fbxRopnet.render()
+            finally:
+                ropNet.destroy()
+
+            panelComInstance.emitPublishProgressStep()
+
         return publishedComponents, 'Published GeometryAsset asset'
 
     @staticmethod
@@ -323,10 +458,22 @@ class GeometryAsset(GenericAsset):
                 </option>
             </row>
         </tab>
+        <tab name="FBX options">
+            <row name="Publish FBX">
+                <option type="checkbox" name="fbx" value="True"/>
+            </row>
+            {2}
+            <row name="FBX Selection Mode" accepts="houdini">
+                <option type="radio" name="fbxExportMode">
+                        <optionitem name="All"/>
+                        <optionitem name="Selection" value="True"/>
+                </option>
+            </row>
+        </tab>
         """
         s = os.getenv('FS')
         e = os.getenv('FE')
-        xml = xml.format(s, e)
+        xml = xml.format(s, e, GenericAsset.FBX_EXPORT_OPTIONS)
         return xml
 
 
@@ -410,6 +557,7 @@ class CameraAsset(GenericAsset):
             steps=[
                 iAObj.options['houdiniNodes'],
                 iAObj.options['alembic'],
+                iAObj.options['fbx'],
                 iAObj.options['houdiniPublishScene']
             ]
         )
@@ -480,6 +628,51 @@ class CameraAsset(GenericAsset):
 
             panelComInstance.emitPublishProgressStep()
 
+        if iAObj.options.get('fbx'):
+            ''' Export FBX'''
+            temporaryPath = HelpFunctions.temporaryFile(suffix='.fbx')
+
+            publishedComponents.append(
+                FTComponent(
+                    componentname='fbx',
+                    path=temporaryPath
+                )
+            )
+
+            objPath = hou.node('/obj')
+
+            # Selection Objects Set
+            if iAObj.options.get('fbxExportMode') == 'Selection':
+                selectednodes = hou.selectedNodes()
+                objects = ' '.join([x.path() for x in selectednodes])
+            else:
+                selectednodes = objPath.glob('*')
+                objects = '*'
+
+            # Create Rop Net
+            ropNet = objPath.createNode('ropnet')
+            fbxRopnet = ropNet.createNode('filmboxfbx')
+
+            fbxRopnet.parm('sopoutput').set(temporaryPath)
+            fbxRopnet.parm('startnode').set(selectednodes[0].parent().path())
+            fbxRopnet.parm('exportkind').set(iAObj.options.get('fbxASCII'))
+            fbxRopnet.parm('sdkversion').set(iAObj.options.get('fbxSDKVersion'))
+            fbxRopnet.parm('vcformat').set(iAObj.options.get('fbxVCF'))
+            fbxRopnet.parm('invisobj').set(iAObj.options.get('fbxEIO'))
+            fbxRopnet.parm('axissystem').set(iAObj.options.get('fbxAS'))
+            fbxRopnet.parm('polylod').set(iAObj.options.get('fbxCLOD'))
+            fbxRopnet.parm('detectconstpointobjs').set(iAObj.options.get('fbxDCPCDO'))
+            fbxRopnet.parm('convertsurfaces').set(iAObj.options.get('fbxCNABSTP'))
+            fbxRopnet.parm('conservemem').set(iAObj.options.get('fbxCMATEOET'))
+            fbxRopnet.parm('forceblendshape').set(iAObj.options.get('fbxFBSE'))
+            fbxRopnet.parm('forceskindeform').set(iAObj.options.get('fbxFSDE'))
+            fbxRopnet.parm('exportendeffectors').set(iAObj.options.get('fbxEEE'))
+            try:
+                fbxRopnet.render()
+            finally:
+                ropNet.destroy()
+
+            panelComInstance.emitPublishProgressStep()
         bcam.destroy()
 
         return publishedComponents, 'Published CameraAsset asset'
@@ -519,10 +712,16 @@ class CameraAsset(GenericAsset):
                 <option type="float" name="alembicEval" value="1.0"/>
             </row>
         </tab>
+        <tab name="FBX options">
+            <row name="Publish FBX">
+                <option type="checkbox" name="fbx" value="True"/>
+            </row>
+            {2}
+        </tab>
         """
         s = os.getenv('FS')
         e = os.getenv('FE')
-        xml = xml.format(s, e)
+        xml = xml.format(s, e, GenericAsset.FBX_EXPORT_OPTIONS)
         return xml
 
 
@@ -531,3 +730,4 @@ def registerAssetTypes():
     assetHandler.registerAssetType(name='scene', cls=SceneAsset)
     assetHandler.registerAssetType(name='geo', cls=GeometryAsset)
     assetHandler.registerAssetType(name='cam', cls=CameraAsset)
+                 
