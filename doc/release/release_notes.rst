@@ -9,7 +9,7 @@ Release Notes
 
 .. release:: Upcoming
 
-    .. change:: chaged
+    .. change:: changed
         :tags: Internal
 
         Add file logger.
@@ -17,7 +17,21 @@ Release Notes
     .. change:: changed
         :tags: Internal
 
-        Update pyside signal signature for pyside2 compatiblity.
+        Update pyside signal signature for pyside2 compability.
+
+.. release:: Upcoming
+
+    .. change:: new
+
+        FBX export on publish.
+
+    .. change:: new
+
+        FBX import.
+
+    .. change:: fixed
+
+        Thumbnail save failed on windows publish.
 
 .. release:: 0.2.3
     :date: 2019-12-10
