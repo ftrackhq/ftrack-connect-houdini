@@ -35,25 +35,35 @@ class GenericAsset(FTAssetType):
             self.addFTab(resultingNode)
             self.setFTab(resultingNode, iAObj)
 
-        elif iAObj.componentName == 'houdiniPublishScene' or iAObj.componentName == 'houdiniNodes':
-            if 'importMode'in iAObj.options and iAObj.options['importMode'] == 'Import':
+        elif (
+                iAObj.componentName == 'houdiniPublishScene' or
+                iAObj.componentName == 'houdiniNodes' or
+                iAObj.filePath.endswith('.hip')
+        ):
+            if (
+                    'importMode'in iAObj.options and
+                    iAObj.options['importMode'] == 'Import'
+            ):
                 # Import Houdini Published Nodes/Scene
                 resultingNode = hou.node('/obj').createNode(
                     'subnet', iAObj.assetName)
-                resultingNode.loadChildrenFromFile(iAObj.filePath.replace("\\", "/"))
+                resultingNode.loadChildrenFromFile(iAObj.filePath.replace('\\', '/'))
                 resultingNode.setSelected(1)
                 resultingNode.moveToGoodPosition()
                 self.addFTab(resultingNode)
                 self.setFTab(resultingNode, iAObj)
 
-            elif 'importMode' in iAObj.options and iAObj.options['importMode'] == 'Merge':
-                hou.hipFile.merge(iAObj.filePath.replace("\\", "/"))
+            elif (
+                    'importMode' in iAObj.options and
+                    iAObj.options['importMode'] == 'Merge'
+            ):
+                hou.hipFile.merge(iAObj.filePath.replace('\\', '/'))
 
             else:
                 # Load Houdini Published Nodes/Scene
-                hou.hipFile.load(iAObj.filePath.replace("\\", "/"))
+                hou.hipFile.load(iAObj.filePath.replace('\\', '/'))
         else:
-            pass # Do not know how to import this format
+            print 'Do not know how to import component {} (path: {})'.format(iAObj.componentName, iAObj.filePath)
 
         return 'Imported ' + iAObj.assetType + ' asset'
 
@@ -79,7 +89,10 @@ class GenericAsset(FTAssetType):
         )
 
         if componentName == 'houdiniNodes':
-            if 'exportMode' in iAObj.options and iAObj.options['exportMode'] == 'Selection':
+            if (
+                    'exportMode' in iAObj.options and
+                    iAObj.options['exportMode'] == 'Selection'
+            ):
                 ''' Publish Selected Nodes'''
                 selectednodes = hou.selectedNodes()
                 selectednodes[0].parent().saveChildrenToFile(
@@ -91,7 +104,10 @@ class GenericAsset(FTAssetType):
                 hou.hipFile.save(temporaryPath)
 
         elif componentName == 'houdiniPublishScene':
-            if 'exportMode' in iAObj.options and iAObj.options['exportMode'] == 'Selection':
+            if (
+                    'exportMode' in iAObj.options and
+                    iAObj.options['exportMode'] == 'Selection'
+            ):
                 # Publish Main Scene in selection mode
                 hou.copyNodesToClipboard(hou.selectedNodes())
 
@@ -191,9 +207,6 @@ class GenericAsset(FTAssetType):
 class SceneAsset(GenericAsset):
     def __init__(self):
         super(SceneAsset, self).__init__()
-
-    def importAsset(self, iAObj=None):
-        GenericAsset.importAsset(self, iAObj)
 
     def publishAsset(self, iAObj=None):
         panelComInstance = panelcom.PanelComInstance.instance()
