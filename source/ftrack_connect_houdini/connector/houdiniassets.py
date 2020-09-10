@@ -35,24 +35,25 @@ class GenericAsset(FTAssetType):
             self.addFTab(resultingNode)
             self.setFTab(resultingNode, iAObj)
 
-        elif iAObj.componentName == 'houdiniPublishScene':
-            # Load Houdini Published Scene
+        elif iAObj.componentName == 'houdiniPublishScene' or iAObj.componentName == 'houdiniNodes':
+            if 'importMode'in iAObj.options and iAObj.options['importMode'] == 'Import':
+                # Import Houdini Published Nodes/Scene
+                resultingNode = hou.node('/obj').createNode(
+                    'subnet', iAObj.assetName)
+                resultingNode.loadChildrenFromFile(iAObj.filePath.replace("\\", "/"))
+                resultingNode.setSelected(1)
+                resultingNode.moveToGoodPosition()
+                self.addFTab(resultingNode)
+                self.setFTab(resultingNode, iAObj)
 
-            hou.hipFile.load(iAObj.filePath)
+            elif 'importMode' in iAObj.options and iAObj.options['importMode'] == 'Merge':
+                hou.hipFile.merge(iAObj.filePath.replace("\\", "/"))
 
-        elif iAObj.componentName == 'houdiniNodes':
-            # Import Published Houdini Nodes
-
-            resultingNode = hou.node('/obj').createNode(
-                'subnet', iAObj.assetName)
-            resultingNode.loadChildrenFromFile(iAObj.filePath)
-            resultingNode.setSelected(1)
-            resultingNode.moveToGoodPosition()
-            self.addFTab(resultingNode)
-            self.setFTab(resultingNode, iAObj)
-
+            else:
+                # Load Houdini Published Nodes/Scene
+                hou.hipFile.load(iAObj.filePath.replace("\\", "/"))
         else:
-            hou.hipFile.load(iAObj.filePath)
+            pass # Do not know how to import this format
 
         return 'Imported ' + iAObj.assetType + ' asset'
 
@@ -77,31 +78,32 @@ class GenericAsset(FTAssetType):
             )
         )
 
-        if 'exportMode' in iAObj.options and (
-                iAObj.options['exportMode'] == 'Selection') and (
-                    componentName == 'houdiniNodes'):
-            ''' Publish Selected Nodes'''
-            selectednodes = hou.selectedNodes()
-            selectednodes[0].parent().saveChildrenToFile(
-                selectednodes, [], temporaryPath)
+        if componentName == 'houdiniNodes':
+            if 'exportMode' in iAObj.options and iAObj.options['exportMode'] == 'Selection':
+                ''' Publish Selected Nodes'''
+                selectednodes = hou.selectedNodes()
+                selectednodes[0].parent().saveChildrenToFile(
+                    selectednodes, [], temporaryPath)
 
-            panelComInstance.emitPublishProgressStep()
-
-        elif componentName == 'houdiniPublishScene' and (
-                iAObj.options['exportMode'] == 'Selection'):
-            # Publish Main Scene in selection mode
-            hou.copyNodesToClipboard(hou.selectedNodes())
-
-            command = "hou.pasteNodesFromClipboard(hou.node('/obj'));\
-            hou.hipFile.save('%s')" % (temporaryPath)
-
-            cmd = '%s -c "%s"' % (os.path.join(
-                os.getenv('HFS'), 'bin', 'hython'), command)
-            os.system(cmd)
+                panelComInstance.emitPublishProgressStep()
+            else:
+                # Publish Main Scene
+                hou.hipFile.save(temporaryPath)
 
         elif componentName == 'houdiniPublishScene':
-            # Publish Main Scene
-            hou.hipFile.save(temporaryPath)
+            if 'exportMode' in iAObj.options and iAObj.options['exportMode'] == 'Selection':
+                # Publish Main Scene in selection mode
+                hou.copyNodesToClipboard(hou.selectedNodes())
+
+                command = "hou.pasteNodesFromClipboard(hou.node('/obj'));\
+                hou.hipFile.save('%s')" % (temporaryPath)
+
+                cmd = '%s -c "%s"' % (os.path.join(
+                    os.getenv('HFS'), 'bin', 'hython'), command)
+                os.system(cmd)
+            else:
+                # Publish Main Scene
+                hou.hipFile.save(temporaryPath)
 
         panelComInstance.emitPublishProgressStep()
 
@@ -171,10 +173,27 @@ class GenericAsset(FTAssetType):
                     self.setFTab(n, iAObj)
                     return True
 
+    @staticmethod
+    def importOptions():
+        xml = """
+        <tab name="Options">
+            <row name="Import mode">
+                <option type="radio" name="importMode">
+                    <optionitem name="Import" value="True"/>
+                    <optionitem name="Merge"/>
+                    <optionitem name="Open"/>
+                </option>
+            </row>
+        </tab>
+        """
+        return xml
 
 class SceneAsset(GenericAsset):
     def __init__(self):
         super(SceneAsset, self).__init__()
+
+    def importAsset(self, iAObj=None):
+        GenericAsset.importAsset(self, iAObj)
 
     def publishAsset(self, iAObj=None):
         panelComInstance = panelcom.PanelComInstance.instance()
@@ -196,6 +215,7 @@ class SceneAsset(GenericAsset):
         </tab>
         """
         return xml
+
 
 
 class GeometryAsset(GenericAsset):
