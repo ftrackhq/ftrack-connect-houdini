@@ -177,6 +177,11 @@ class Connector(maincon.Connector):
                 iAObj.options['alembicExportMode'] == 'Selection'
             ):
                 return None, 'Nothing selected'
+            if (
+                'fbxExportMode' in iAObj.options and
+                iAObj.options['fbxExportMode'] == 'Selection'
+            ):
+                return None, 'Nothing selected'
         elif assetType == 'cam':
             if len(nodes) != 1:
                 return None, 'Select Only One Camera Object'
@@ -194,6 +199,8 @@ class Connector(maincon.Connector):
 
         filename = "%s.jpg" % (os.path.join(
             tempfile.gettempdir(), str(uuid.uuid4())))
+        if os.name == "nt":
+            filename = filename.replace('\\','\\\\')
 
         desktop = hou.ui.curDesktop()
         scene_view = toolutils.sceneViewer()
