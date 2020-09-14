@@ -17,9 +17,23 @@ Release Notes
     .. change:: changed
         :tags: Internal
 
-        Update pyside signal signature for pyside2 compatiblity.
+        Update pyside signal signature for pyside2 compability.
 
-.. release::
+.. release:: Upcoming
+
+    .. change:: new
+
+        FBX export on publish.
+
+    .. change:: new
+
+        FBX import.
+
+    .. change:: fixed
+
+        Thumbnail save failed on windows publish.
+
+.. release:: Upcoming
 
     .. change:: changed
         :tags: fix
