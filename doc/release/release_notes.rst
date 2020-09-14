@@ -33,6 +33,24 @@ Release Notes
 
         Thumbnail save failed on windows publish.
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: fix
+
+        Have plug-in load proceed if there is an exception setting up frame range and fps.
+
+    .. change:: changed
+        :tags: fix
+
+        Hip can now be imported on Windows with paths having backlash (\) elements.
+
+    .. change:: new
+        :tags: Internal
+
+        New Import,Merge & Open import options.
+
+
 .. release:: 0.2.3
     :date: 2019-12-10
 

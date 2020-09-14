@@ -99,29 +99,40 @@ class GenericAsset(FTAssetType):
             self.setFTab(resultingNode, iAObj)
 
         elif (
+                iAObj.componentName == 'houdiniPublishScene' or
+                iAObj.componentName == 'houdiniNodes' or
+                iAObj.filePath.endswith('.hip')
+        ):
+            if (
+                    'importMode'in iAObj.options and
+                    iAObj.options['importMode'] == 'Import'
+            ):
+                # Import Houdini Published Nodes/Scene
+                resultingNode = hou.node('/obj').createNode(
+                    'subnet', iAObj.assetName)
+                resultingNode.loadChildrenFromFile(iAObj.filePath.replace('\\', '/'))
+                resultingNode.setSelected(1)
+                resultingNode.moveToGoodPosition()
+                self.addFTab(resultingNode)
+                self.setFTab(resultingNode, iAObj)
+
+            elif (
+                    'importMode' in iAObj.options and
+                    iAObj.options['importMode'] == 'Merge'
+            ):
+                hou.hipFile.merge(iAObj.filePath.replace('\\', '/'))
+            else:
+                # Load Houdini Published Nodes/Scene
+                hou.hipFile.load(iAObj.filePath.replace('\\', '/'))
+
+        elif (
                 iAObj.componentName == 'fbx' or
                 iAObj.filePath.endswith('fbx')
         ):
             hou.hipFile.importFBX(iAObj.filePath)
 
-        elif iAObj.componentName == 'houdiniPublishScene':
-            # Load Houdini Published Scene
-
-            hou.hipFile.load(iAObj.filePath)
-
-        elif iAObj.componentName == 'houdiniNodes':
-            # Import Published Houdini Nodes
-
-            resultingNode = hou.node('/obj').createNode(
-                'subnet', iAObj.assetName)
-            resultingNode.loadChildrenFromFile(iAObj.filePath)
-            resultingNode.setSelected(1)
-            resultingNode.moveToGoodPosition()
-            self.addFTab(resultingNode)
-            self.setFTab(resultingNode, iAObj)
-
         else:
-            hou.hipFile.load(iAObj.filePath)
+            print 'Do not know how to import component {} (path: {})'.format(iAObj.componentName, iAObj.filePath)
 
         return 'Imported ' + iAObj.assetType + ' asset'
 
@@ -257,6 +268,20 @@ class GenericAsset(FTAssetType):
                     return True
 
     @staticmethod
+    def importOptions():
+        xml = """
+        <tab name="Options">
+            <row name="Import mode">
+                <option type="radio" name="importMode">
+                    <optionitem name="Import" value="True"/>
+                    <optionitem name="Merge"/>
+                    <optionitem name="Open"/>
+                </option>
+            </row>
+        </tab>
+        """
+        return xml
+
     def parseComboBoxNameValue(name):
         return name[name.rfind("{") + 1:name.rfind("}")]
 
@@ -285,6 +310,7 @@ class SceneAsset(GenericAsset):
         </tab>
         """
         return xml
+
 
 
 class GeometryAsset(GenericAsset):
@@ -368,8 +394,10 @@ class GeometryAsset(GenericAsset):
             abcRopnet.parm('root').set(selectednodes[0].parent().path())
             abcRopnet.parm('objects').set(objects)
             abcRopnet.parm('format').set('hdf5')
-            abcRopnet.render()
-            ropNet.destroy()
+            try:
+                abcRopnet.render()
+            finally:
+                ropNet.destroy()
 
             panelComInstance.emitPublishProgressStep()
 
