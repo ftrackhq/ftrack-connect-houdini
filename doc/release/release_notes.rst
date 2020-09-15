@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.3.0
+    :date: 2020-09-15
 
     .. change:: changed
         :tags: Internal
@@ -20,14 +21,17 @@ Release Notes
         Update pyside signal signature for pyside2 compability.
 
     .. change:: new
+        :tags: Internal
 
         FBX export on publish.
 
     .. change:: new
+        :tags: Internal
 
         FBX import.
 
     .. change:: fixed
+        :tags: Internal
 
         Thumbnail save failed on windows publish.
 
