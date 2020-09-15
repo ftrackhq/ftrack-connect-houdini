@@ -19,8 +19,6 @@ Release Notes
 
         Update pyside signal signature for pyside2 compability.
 
-.. release:: Upcoming
-
     .. change:: new
 
         FBX export on publish.
@@ -32,8 +30,6 @@ Release Notes
     .. change:: fixed
 
         Thumbnail save failed on windows publish.
-
-.. release:: Upcoming
 
     .. change:: changed
         :tags: fix
