@@ -5,9 +5,9 @@ import hou
 import ftrack
 import tempfile
 
-import ftrack_connect.config
-from ftrack_connect.ui.widget.import_asset import FtrackImportAssetDialog
-from ftrack_connect.ui.widget.asset_manager import FtrackAssetManagerDialog
+import ftrack_connector_legacy.config
+from ftrack_connector_legacy.ui.widget.import_asset import FtrackImportAssetDialog
+from ftrack_connector_legacy.ui.widget.asset_manager import FtrackAssetManagerDialog
 
 from ftrack_connect_houdini.connector import Connector
 from ftrack_connect_houdini.ui.info import FtrackHoudiniInfoDialog
@@ -150,6 +150,6 @@ def showDialog(name):
 
     return dialog
 
-ftrack_connect.config.configure_logging(
+ftrack_connector_legacy.config.configure_logging(
     'ftrack_connect_houdini', level='WARNING'
 )

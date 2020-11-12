@@ -8,7 +8,7 @@ import logging
 import os
 
 import ftrack
-import ftrack_connect.application
+import ftrack_connector_legacy.application
 
 cwd = os.path.dirname(__file__)
 sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
@@ -29,10 +29,10 @@ class HoudiniAction(object):
         '''Initialise action with *applicationStore* and *launcher*.
 
         *applicationStore* should be an instance of
-        :class:`ftrack_connect.application.ApplicationStore`.
+        :class:`ftrack_connector_legacy.application.ApplicationStore`.
 
         *launcher* should be an instance of
-        :class:`ftrack_connect.application.ApplicationLauncher`.
+        :class:`ftrack_connector_legacy.application.ApplicationLauncher`.
 
         '''
         super(HoudiniAction, self).__init__()
@@ -145,7 +145,7 @@ class HoudiniAction(object):
         )
 
 
-class ApplicationStore(ftrack_connect.application.ApplicationStore):
+class ApplicationStore(ftrack_connector_legacy.application.ApplicationStore):
     '''Store used to find and keep track of available applications.'''
 
     def _discoverApplications(self):
@@ -204,7 +204,7 @@ class ApplicationStore(ftrack_connect.application.ApplicationStore):
         return applications
 
 
-class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
+class ApplicationLauncher(ftrack_connector_legacy.application.ApplicationLauncher):
     '''Custom launcher to modify environment before launch.'''
     def __init__(self, application_store, plugin_path):
         '''.'''
@@ -251,19 +251,19 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
         # & is a special character meaning the default path
         # see : http://www.sidefx.com/docs/houdini/basics/config_env.html
 
-        environment = ftrack_connect.application.appendPath(
+        environment = ftrack_connector_legacy.application.appendPath(
             os.path.pathsep.join([houdini_connect_plugins, '&']),
             'HOUDINI_PATH',
             environment
         )
 
-        environment = ftrack_connect.application.appendPath(
+        environment = ftrack_connector_legacy.application.appendPath(
             houdini_connect_plugins,
             'PYTHONPATH',
             environment
         )
 
-        environment = ftrack_connect.application.prependPath(
+        environment = ftrack_connector_legacy.application.prependPath(
             sources,
             'PYTHONPATH',
             environment
