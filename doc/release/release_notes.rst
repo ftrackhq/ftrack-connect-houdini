@@ -7,6 +7,20 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+    .. change:: change
+
+        :tags: Hook
+            Update hook for application-launcher.
+
+
+    .. change:: change
+        :tags: Setup
+            Provide dependency to ftrack-connector-legacy module.
+
+
 .. release:: 0.3.0
     :date: 2020-09-15
 
