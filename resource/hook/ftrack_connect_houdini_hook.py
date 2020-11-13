@@ -6,7 +6,7 @@ import sys
 import pprint
 import logging
 import os
-
+import ssl
 import ftrack
 import ftrack_connect.application
 
@@ -269,6 +269,7 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
             environment
         )
         environment['QT_PREFERRED_BINDING'] = os.pathsep.join(['PySide2', 'PySide'])
+        environment['SSL_CERT_FILE'] = ssl.get_default_verify_paths().cafile
 
         # Always return the environment at the end.
         return environment
