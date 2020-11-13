@@ -269,7 +269,10 @@ class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
             environment
         )
         environment['QT_PREFERRED_BINDING'] = os.pathsep.join(['PySide2', 'PySide'])
-        environment['SSL_CERT_FILE'] = ssl.get_default_verify_paths().cafile
+        
+        # Set default path for legacy api SSL certificate.
+        if 'linux' in sys.platform:
+            environment['SSL_CERT_FILE'] = ssl.get_default_verify_paths().cafile
 
         # Always return the environment at the end.
         return environment
