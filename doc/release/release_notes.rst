@@ -7,6 +7,19 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Internal
+
+        Houdini fails to load due to certificate error under linux.
+
+    .. change:: changed
+        :tags: Setup
+
+        Update pip command to install dependencie to generic main call.     
+
+
 .. release:: 0.3.0
     :date: 2020-09-15
 
