@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.3.1
+    :date: 2020-11-16
 
     .. change:: fixed
         :tags: Internal
