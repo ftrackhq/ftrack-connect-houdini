@@ -14,7 +14,6 @@ from ftrack_connect_houdini.ui.info import FtrackHoudiniInfoDialog
 from ftrack_connect_houdini.ui.publisher import PublishAssetDialog
 from ftrack_connect_houdini.ui.tasks import FtrackTasksDialog
 
-from ftrack_connect_houdini.usage import send_event
 
 try:
     ftrack.setup()
@@ -27,11 +26,6 @@ connector.registerAssets()
 currentEntity = ftrack.Task(
     os.getenv('FTRACK_TASKID',
               os.getenv('FTRACK_SHOTID')))
-
-send_event(
-    'USED-FTRACK-CONNECT-HOUDINI'
-)
-
 
 
 def setFrameRangeData():
