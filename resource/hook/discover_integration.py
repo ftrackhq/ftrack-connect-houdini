@@ -34,18 +34,18 @@ def on_discover_houdini_integration(session, event):
     data = {
         'integration': {
             'name': 'ftrack-connect-houdini',
-            'version': integration_version
-        },
-        'env': {
-            'PYTHONPATH.prepend': os.path.pathsep.join([houdini_connect_plugins,sources]),
-            'HOUDINI_PATH': os.path.pathsep.join([houdini_connect_plugins, '&']),
-            'QT_PREFERRED_BINDING':  os.pathsep.join(['PySide2', 'PySide']),
-            'FTRACK_TASKID.set': task['id'],
-            'FTRACK_SHOTID.set': task['parent']['id'],
-            'LOGNAME.set': session._api_user,
-            'FTRACK_APIKEY.set': session._api_key,
-            'FS.set': task['parent']['custom_attributes'].get('fstart', '1.0'),
-            'FE.set': task['parent']['custom_attributes'].get('fend', '100.0')
+            'version': integration_version,
+            'env': {
+                'PYTHONPATH.prepend': os.path.pathsep.join([houdini_connect_plugins,sources]),
+                'HOUDINI_PATH': os.path.pathsep.join([houdini_connect_plugins, '&']),
+                'QT_PREFERRED_BINDING':  os.pathsep.join(['PySide2', 'PySide']),
+                'FTRACK_TASKID.set': task['id'],
+                'FTRACK_SHOTID.set': task['parent']['id'],
+                'LOGNAME.set': session._api_user,
+                'FTRACK_APIKEY.set': session._api_key,
+                'FS.set': task['parent']['custom_attributes'].get('fstart', '1.0'),
+                'FE.set': task['parent']['custom_attributes'].get('fend', '100.0')
+            }
         }
     }
     return data
