@@ -4,6 +4,7 @@ import ftrack
 
 import os
 import copy
+import subprocess
 
 from ftrack_connect.connector import (
     FTAssetHandlerInstance,
@@ -120,7 +121,10 @@ class GenericAsset(FTAssetType):
                     'importMode' in iAObj.options and
                     iAObj.options['importMode'] == 'Merge'
             ):
-                hou.hipFile.merge(iAObj.filePath.replace('\\', '/'))
+                if iAObj.options['overwriteOnConflict']:
+                    hou.hipFile.merge(iAObj.filePath.replace('\\', '/'), overwrite_on_conflict=True)
+                else:
+                    hou.hipFile.merge(iAObj.filePath.replace('\\', '/'))
             else:
                 # Load Houdini Published Nodes/Scene
                 hou.hipFile.load(iAObj.filePath.replace('\\', '/'))
@@ -159,11 +163,16 @@ class GenericAsset(FTAssetType):
                 hou.copyNodesToClipboard(hou.selectedNodes())
 
                 command = "hou.pasteNodesFromClipboard(hou.node('/obj'));\
-                hou.hipFile.save('%s')" % (temporaryPath)
+                hou.hipFile.save('%s')" % (temporaryPath.replace('\\', '\\\\'))
 
                 cmd = '%s -c "%s"' % (os.path.join(
                     os.getenv('HFS'), 'bin', 'hython'), command)
-                os.system(cmd)
+
+                #os.system(cmd)
+                result = subprocess.Popen(cmd)
+                result.communicate()
+                if result.returncode != 0:
+                    raise Exception('Houdini selected nodes scene export failed!')
             else:
                 hou.hipFile.save(temporaryPath)
 
@@ -278,10 +287,14 @@ class GenericAsset(FTAssetType):
                     <optionitem name="Open"/>
                 </option>
             </row>
+            <row name="Merge - overwrite on conflict" accepts="houdini">
+                <option type="checkbox" name="overwriteOnConflict" value="True"/>
+            </row>
         </tab>
         """
         return xml
 
+    @staticmethod
     def parseComboBoxNameValue(name):
         return name[name.rfind("{") + 1:name.rfind("}")]
 
@@ -459,7 +472,7 @@ class GeometryAsset(GenericAsset):
             <row name="Attach scene to asset" accepts="houdini">
                 <option type="checkbox" name="houdiniPublishScene" value="False"/>
             </row>
-            <row name="Houdini binary" accepts="houdini">
+            <row name="Houdini nodes" accepts="houdini">
                 <option type="checkbox" name="houdiniNodes" value="True"/>
             </row>
             <row name="Houdini Selection Mode" accepts="houdini">

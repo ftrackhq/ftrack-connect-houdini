@@ -7,6 +7,19 @@
 Release Notes
 *************
 
+.. release:: upcoming
+
+    .. change:: fixed
+
+        FBX export bug with  parseComboBoxNameValue().
+
+    .. change:: fixed
+
+        Publish Scene asset from selection resulted in 0 bytes scenes.
+
+
+
+
 .. release:: 0.3.1
     :date: 2020-11-16
 
