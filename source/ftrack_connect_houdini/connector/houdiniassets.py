@@ -5,14 +5,14 @@ import ftrack
 import os
 import copy
 
-from ftrack_connect.connector import (
+from ftrack_connector_legacy.connector import (
     FTAssetHandlerInstance,
     HelpFunctions,
     FTAssetType,
     FTComponent
 )
 
-from ftrack_connect.connector import panelcom
+from ftrack_connector_legacy.connector import panelcom
 
 
 class GenericAsset(FTAssetType):
