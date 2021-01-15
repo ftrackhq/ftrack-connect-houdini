@@ -45,7 +45,8 @@ def setFrameRangeData():
     try:
 
         shot = ftrack.Shot(id=shot_id)
-        fps = shot.get('fps')
+        if 'fps' in shot.keys() and shot['fps'] != "":
+            fps = float(shot.get('fps'))
         if 'handles' in shot.keys():
             handles = float(shot.get('handles'))
     except Exception as error:
