@@ -67,3 +67,9 @@ def register(session):
         ' and data.application.identifier=houdini*',
         handle_event
     )
+    
+    session.event_hub.subscribe(
+        'topic=ftrack.connect.application.discover'
+        ' and data.application.identifier=houdini*',
+        handle_event
+    )
