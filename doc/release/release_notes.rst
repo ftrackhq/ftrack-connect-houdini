@@ -8,7 +8,8 @@ Release Notes
 *************
 
 
-.. release:: Upcoming
+.. release:: 0.4.0-beta-1
+    :date: 2021-03-11
 
     .. change:: change
 
