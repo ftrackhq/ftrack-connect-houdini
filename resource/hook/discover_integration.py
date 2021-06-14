@@ -54,7 +54,9 @@ def on_launch_houdini_integration(session, event):
         hou_base_data['integration']['env']['FTRACK_SHOTID.set'] =  task['parent']['id']
         hou_base_data['integration']['env']['FS.set'] = task['parent']['custom_attributes'].get('fstart', '1.0')
         hou_base_data['integration']['env']['FE.set'] = task['parent']['custom_attributes'].get('fend', '100.0')
-    return data
+
+        
+    return hou_base_data
 
 def register(session):
     '''Subscribe to application launch events on *registry*.'''
