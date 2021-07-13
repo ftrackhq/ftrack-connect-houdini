@@ -9,5 +9,5 @@ Documentation
 *************
 
 Full documentation, including installation and setup guides, can be found at
-http://ftrack-connect-houdini.rtd.ftrack.com/en/latest/index.html
+https://ftrack-connect-houdini.readthedocs.io/en/latest/
 
