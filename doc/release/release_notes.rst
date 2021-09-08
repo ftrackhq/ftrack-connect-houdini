@@ -8,18 +8,31 @@ Release Notes
 *************
 
 
-.. release:: 0.4.0-beta-1
-    :date: 2021-03-11
+.. release:: 0.4.0
+    :date: 2021-09-08
 
-    .. change:: change
+    .. change:: changed
 
         :tags: Hook
             Update hook for application-launcher.
 
 
-    .. change:: change
+    .. change:: changed
         :tags: Setup
             Provide dependency to ftrack-connector-legacy module.
+
+.. release:: 0.3.1
+    :date: 2020-11-16
+
+    .. change:: fixed
+        :tags: Internal
+
+        Houdini fails to load due to certificate error under linux.
+
+    .. change:: changed
+        :tags: Setup
+
+        Update pip command to install dependencie to generic main call.     
 
 
 .. release:: 0.3.0
