@@ -13,9 +13,9 @@ import ftrack_api
 
 cwd = os.path.dirname(__file__)
 sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
-sys.path.insert(0, sources)
 
 def on_discover_houdini_integration(session, event):
+    sys.path.append(sources)
 
     from ftrack_connect_houdini import __version__ as integration_version
 
