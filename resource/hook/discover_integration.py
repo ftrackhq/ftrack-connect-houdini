@@ -26,6 +26,23 @@ def on_discover_houdini_integration(session, event):
         }
     }
 
+    # Make sure app supports python 2
+    app_path = event['data']['application']['path']
+
+    if os.name == 'nt':
+        if os.path.exists(os.path.join(app_path, 'python37')):
+            logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
+                app_path))
+            data['integration']['disable'] = True
+    else:
+        # Check that Python framework link points to a certain target
+        link_path = os.path.join(app_path, '../Frameworks/Python.framework/Versions/Current')
+        value = os.readlink(link_path)
+        if value.split('.')[0] != '2':
+            logger.debug('Not discovering non-py2k Houdini build ("{0}",'
+                ' linked interpreter: {1}).'.format(app_path, value))
+            data['integration']['disable'] = True
+
     return data
 
 def on_launch_houdini_integration(session, event):
