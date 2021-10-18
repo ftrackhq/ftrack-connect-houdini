@@ -14,6 +14,8 @@ import ftrack_api
 cwd = os.path.dirname(__file__)
 sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
 
+logger = logging.getLogger('ftrack_connect_houdini.hook')
+
 def on_discover_houdini_integration(session, event):
     sys.path.append(sources)
 
@@ -88,8 +90,7 @@ def register(session):
 
     session.event_hub.subscribe(
         'topic=ftrack.connect.application.discover'
-        ' and data.application.identifier=houdini*'
-        ' and data.application.version < 19',
+        ' and data.application.identifier=houdini*',
         handle_discovery_event
     )
 
@@ -100,8 +101,7 @@ def register(session):
 
     session.event_hub.subscribe(
         'topic=ftrack.connect.application.launch'
-        ' and data.application.identifier=houdini*'
-        ' and data.application.version < 19',
+        ' and data.application.identifier=houdini*',
         handle_launch_event
     )
     
