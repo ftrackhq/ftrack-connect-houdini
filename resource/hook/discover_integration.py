@@ -3,9 +3,9 @@
 
 import getpass
 import sys
-import pprint
 import logging
 import os
+import platform
 import functools
 
 import ftrack_api
@@ -31,18 +31,26 @@ def on_discover_houdini_integration(session, event):
     # Make sure app supports python 2
     app_path = event['data']['application']['path']
 
-    if os.name == 'nt':
+    if platform.system() == 'Windows':
         if os.path.exists(os.path.join(app_path, 'python37')):
             logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
                 app_path))
             data['integration']['disable'] = True
-    else:
+    elif platform.system() == 'Darwin':
         # Check that Python framework link points to a certain target
         link_path = os.path.join(app_path, '../Frameworks/Python.framework/Versions/Current')
         value = os.readlink(link_path)
         if value.split('.')[0] != '2':
             logger.debug('Not discovering non-py2k Houdini build ("{0}",'
                 ' linked interpreter: {1}).'.format(app_path, value))
+            data['integration']['disable'] = True
+    elif platform.system() == 'Linux':
+        # Check if python 2.7 library exists
+        lib_path = os.path.join(app_path, 'python/lib/python2.7')
+
+        if not os.path.exists(lib_path):
+            logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
+                app_path))
             data['integration']['disable'] = True
 
     return data
