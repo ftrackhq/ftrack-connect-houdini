@@ -46,8 +46,8 @@ def on_discover_houdini_integration(session, event):
             data['integration']['disable'] = True
     elif platform.system() == 'Linux':
         # Check if python 2.7 library exists
+        app_path = os.path.dirname(os.path.dirname(app_path))
         lib_path = os.path.join(app_path, 'python/lib/python2.7')
-
         if not os.path.exists(lib_path):
             logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
                 app_path))
