@@ -3,9 +3,9 @@
 
 import getpass
 import sys
-import pprint
 import logging
 import os
+import platform
 import functools
 
 import ftrack_api
@@ -13,6 +13,54 @@ import ftrack_api
 
 cwd = os.path.dirname(__file__)
 sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
+
+logger = logging.getLogger('ftrack_connect_houdini.hook')
+
+
+def get_windows_options(event, data):
+    app_path = event['data']['application']['path']
+    if os.path.exists(os.path.join(app_path, 'python37')):
+        logger.debug(
+            'Not discovering non-py2k Houdini build ("{0}").'.format(
+                app_path
+            )
+        )
+        data['integration']['disable'] = True
+
+
+def get_darwin_options(event, data):
+    app_path = event['data']['application']['path']
+    link_path = os.path.join(
+        app_path, '..', 'Frameworks/Python.framework/Versions/Current'
+    )
+    
+    value = os.readlink(link_path)
+    if value.split('.')[0] != '2':
+        logger.debug(
+            'Not discovering non-py2k Houdini build ("{0}",'
+            ' linked interpreter: {1}).'.format(
+                app_path, value
+            )
+        )
+        data['integration']['disable'] = True
+
+def get_linux_options(event, data):
+    app_path = event['data']['application']['path']
+    app_dir = os.path.dirname(os.path.dirname(app_path))
+    lib_path = os.path.join(app_dir, 'python/lib/python2.7')
+    if not os.path.exists(app_dir):
+        logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
+            app_path))
+        data['integration']['disable'] = True
+
+
+platform_options = {
+    'windows': get_windows_options,
+    'darwin': get_darwin_options,
+    'linux': get_linux_options
+
+}
+
 
 def on_discover_houdini_integration(session, event):
     sys.path.append(sources)
@@ -25,6 +73,9 @@ def on_discover_houdini_integration(session, event):
             'version': integration_version
         }
     }
+
+    options_function = platform_options.get(event['data']['platform'])
+    options_function(event, data)
 
     return data
 
@@ -71,8 +122,7 @@ def register(session):
 
     session.event_hub.subscribe(
         'topic=ftrack.connect.application.discover'
-        ' and data.application.identifier=houdini*'
-        ' and data.application.version < 19',
+        ' and data.application.identifier=houdini*',
         handle_discovery_event
     )
 
@@ -83,8 +133,7 @@ def register(session):
 
     session.event_hub.subscribe(
         'topic=ftrack.connect.application.launch'
-        ' and data.application.identifier=houdini*'
-        ' and data.application.version < 19',
+        ' and data.application.identifier=houdini*',
         handle_launch_event
     )
     
