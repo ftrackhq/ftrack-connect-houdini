@@ -16,6 +16,52 @@ sources = os.path.abspath(os.path.join(cwd, '..', 'dependencies'))
 
 logger = logging.getLogger('ftrack_connect_houdini.hook')
 
+
+def get_windows_options(event, data):
+    app_path = event['data']['application']['path']
+    if os.path.exists(os.path.join(app_path, 'python37')):
+        logger.debug(
+            'Not discovering non-py2k Houdini build ("{0}").'.format(
+                app_path
+            )
+        )
+        data['integration']['disable'] = True
+
+
+def get_darwin_options(event, data):
+    app_path = event['data']['application']['path']
+    link_path = os.path.join(
+        app_path, '..', 'Frameworks/Python.framework/Versions/Current'
+    )
+    
+    value = os.readlink(link_path)
+    if value.split('.')[0] != '2':
+        logger.debug(
+            'Not discovering non-py2k Houdini build ("{0}",'
+            ' linked interpreter: {1}).'.format(
+                app_path, value
+            )
+        )
+        data['integration']['disable'] = True
+
+def get_linux_options(event, data):
+    app_path = event['data']['application']['path']
+    app_dir = os.path.dirname(os.path.dirname(app_path))
+    lib_path = os.path.join(app_dir, 'python/lib/python2.7')
+    if not os.path.exists(app_dir):
+        logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
+            app_path))
+        data['integration']['disable'] = True
+
+
+platform_options = {
+    'windows': get_windows_options,
+    'darwin': get_darwin_options,
+    'linux': get_linux_options
+
+}
+
+
 def on_discover_houdini_integration(session, event):
     sys.path.append(sources)
 
@@ -28,30 +74,8 @@ def on_discover_houdini_integration(session, event):
         }
     }
 
-    # Make sure app supports python 2
-    app_path = event['data']['application']['path']
-
-    if event['data']['platform'] == 'windows':
-        if os.path.exists(os.path.join(app_path, 'python37')):
-            logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
-                app_path))
-            data['integration']['disable'] = True
-    elif event['data']['platform'] == 'darwin':
-        # Check that Python framework link points to a certain target
-        link_path = os.path.join(app_path, '../Frameworks/Python.framework/Versions/Current')
-        value = os.readlink(link_path)
-        if value.split('.')[0] != '2':
-            logger.debug('Not discovering non-py2k Houdini build ("{0}",'
-                ' linked interpreter: {1}).'.format(app_path, value))
-            data['integration']['disable'] = True
-    elif event['data']['platform'] == 'linux':
-        # Check if python 2.7 library exists
-        app_path = os.path.dirname(os.path.dirname(app_path))
-        lib_path = os.path.join(app_path, 'python/lib/python2.7')
-        if not os.path.exists(lib_path):
-            logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
-                app_path))
-            data['integration']['disable'] = True
+    options_function = platform_options.get(event['data']['platform'])
+    options_function(event, data)
 
     return data
 
