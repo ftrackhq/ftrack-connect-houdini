@@ -31,12 +31,12 @@ def on_discover_houdini_integration(session, event):
     # Make sure app supports python 2
     app_path = event['data']['application']['path']
 
-    if platform.system() == 'Windows':
+    if event['data']['platform'] == 'windows':
         if os.path.exists(os.path.join(app_path, 'python37')):
             logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
                 app_path))
             data['integration']['disable'] = True
-    elif platform.system() == 'Darwin':
+    elif event['data']['platform'] == 'darwin':
         # Check that Python framework link points to a certain target
         link_path = os.path.join(app_path, '../Frameworks/Python.framework/Versions/Current')
         value = os.readlink(link_path)
@@ -44,7 +44,7 @@ def on_discover_houdini_integration(session, event):
             logger.debug('Not discovering non-py2k Houdini build ("{0}",'
                 ' linked interpreter: {1}).'.format(app_path, value))
             data['integration']['disable'] = True
-    elif platform.system() == 'Linux':
+    elif event['data']['platform'] == 'linux':
         # Check if python 2.7 library exists
         app_path = os.path.dirname(os.path.dirname(app_path))
         lib_path = os.path.join(app_path, 'python/lib/python2.7')
