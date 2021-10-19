@@ -19,7 +19,8 @@ logger = logging.getLogger('ftrack_connect_houdini.hook')
 
 def get_windows_options(event, data):
     app_path = event['data']['application']['path']
-    if os.path.exists(os.path.join(app_path, 'python37')):
+    app_dir = os.path.dirname(os.path.dirname(app_path))
+    if os.path.exists(os.path.join(app_dir, 'python37')):
         logger.debug(
             'Not discovering non-py2k Houdini build ("{0}").'.format(
                 app_path
@@ -48,7 +49,7 @@ def get_linux_options(event, data):
     app_path = event['data']['application']['path']
     app_dir = os.path.dirname(os.path.dirname(app_path))
     lib_path = os.path.join(app_dir, 'python/lib/python2.7')
-    if not os.path.exists(app_dir):
+    if not os.path.exists(lib_path):
         logger.debug('Not discovering non-py2k Houdini build ("{0}").'.format(
             app_path))
         data['integration']['disable'] = True
