@@ -4,13 +4,13 @@
 import os
 import re
 import shutil
+import sys
 
 from setuptools.command.test import test as TestCommand
 from setuptools import setup, find_packages, Command
 from pkg_resources import parse_version
-import pip
 
-from pip.__main__ import _main as pip_main
+import subprocess
 
 # Define paths
 
@@ -92,14 +92,11 @@ class BuildPlugin(Command):
         )
 
         # Install local dependencies
-        pip_main(
-            [
-                'install',
-                '.',
-                '--target',
-                os.path.join(STAGING_PATH, 'dependencies')
-            ]
+        subprocess.check_call(
+            [sys.executable, '-m', 'pip', 'install','.','--target',
+            os.path.join(STAGING_PATH, 'dependencies')]
         )
+
 
         # Generate plugin zip
         shutil.make_archive(
@@ -141,6 +138,8 @@ setup(
     },
     install_requires=[
         'appdirs',
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2'
-    ]
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2',
+        'ftrack-connector-legacy @ git+https://bitbucket.org/ftrack/ftrack-connector-legacy/get/1.0.0.zip#egg=ftrack-connector-legacy-1.0.0',
+    ],
+    python_requires=">=2.7.9, <3"
 )

@@ -1,9 +1,9 @@
 ..
     :copyright: Copyright (c) 2016 Postmodern Digital
 
-###################
+######################
 ftrack connect houdini
-###################
+######################
 
 Basic Houdini integration with ftrack.
 

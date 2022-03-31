@@ -8,8 +8,8 @@ import urlparse
 import hou
 import toolutils
 
-from ftrack_connect.connector import base as maincon
-from ftrack_connect.connector import FTAssetHandlerInstance, HelpFunctions
+from ftrack_connector_legacy.connector import base as maincon
+from ftrack_connector_legacy.connector import FTAssetHandlerInstance, HelpFunctions
 
 
 class Connector(maincon.Connector):

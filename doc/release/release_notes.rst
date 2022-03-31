@@ -7,6 +7,27 @@
 Release Notes
 *************
 
+.. release:: 0.4.0
+    :date: 2021-09-08
+
+    .. change:: changed
+        :tags: Hook
+
+            Update hook for application-launcher.
+
+
+    .. change:: changed
+        :tags: Setup
+
+            Provide dependency to ftrack-connector-legacy module.
+
+
+.. warning::
+
+    From this version the support for ftrack-connect 1.X is dropped, and
+    only ftrack-conenct 2.0 will be supported up to the integration EOL.
+
+
 .. release:: 0.3.1
     :date: 2020-11-16
 
@@ -143,7 +164,7 @@ Release Notes
         Add new style of startup Frames set. If handles exists it set handles as Global parameter and with play-bar you can see actual frame range and handles is extended.
 
 .. release:: 0.1.0
-    :date: 2016-14-11
+    :date: 2016-11-14
 
     .. change:: new
 
