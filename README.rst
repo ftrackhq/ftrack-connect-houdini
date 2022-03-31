@@ -4,7 +4,7 @@ ftrack connect houdini
 
 .. warning::
 
-    This integration supports only python 2 and will reach EOL by the end of 2022 and will no be longer supported. 
+    This integration is been updated to run on ftrack Connect 2.0 but will reach EOL by the end of 2022 and will no be longer supported, however will be available for download.
 
 Community owned Houdini integration for ftrack.
 
